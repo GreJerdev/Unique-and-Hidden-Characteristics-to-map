@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<QueryServer>
+		<FeatureDataManager type="mySQL">
+			<dbschemapostfix>rest_db</dbschemapostfix>
+			<user>root</user> 
+			<password>1qaz2wsx</password> 
+			<host>127.0.0.1</host>
+		</FeatureDataManager>
+		<SoureDataManager type="mySQL">
+			<user>root</user> 
+			<password>1qaz2wsx</password> 
+			<host>127.0.0.1</host>
+			<databaseName>yelp_challenge</databaseName>
+		</SoureDataManager>
+	</QueryServer>
+</configuration>

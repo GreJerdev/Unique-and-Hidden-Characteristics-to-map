@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<ManagementUnit>
+		<FeatureProvider type="FS">
+			<path>D:/Projects/My Final Master Project/Data From Alon/Second level/tfidf/</path>
+		</FeatureProvider>
+		<FeatureDataManager type="mySQL">
+			<dbschemapostfix>rest_db</dbschemapostfix>
+			<user>root</user> 
+			<password>1qaz2wsx</password> 
+			<host>127.0.0.1</host>
+		</FeatureDataManager>
+		<SoureDataManager>
+			<user>root</user> 
+			<password>1qaz2wsx</password> 
+			<host>127.0.0.1</host>
+			<databaseName>yelp_challenge</databaseName>
+		</SoureDataManager>
+		<TCPQueue>
+			<servers>
+				<server>
+					<name>1</name>
+					<ip>192.168.1.27</ip>
+					<port>1234</port>
+					<maxnumberofmsg>1</maxnumberofmsg>
+				</server>
+				<server>
+					<name>2</name>
+					<ip>192.168.1.20</ip>
+					<port>1234</port>
+					<maxnumberofmsg>1</maxnumberofmsg>
+				</server>
+				<server>
+					<name>3</name>
+					<ip>192.168.1.17</ip>
+					<port>1234</port>
+					<maxnumberofmsg>1</maxnumberofmsg>
+				</server>
+				<server>
+					<name>4</name>
+					<ip>127.0.0.1</ip>
+					<port>1234</port>
+					<maxnumberofmsg>1</maxnumberofmsg>
+				</server>
+				<server>
+					<name>5</name>
+					<ip>192.168.1.18</ip>
+					<port>1234</port>
+					<maxnumberofmsg>1</maxnumberofmsg>
+				</server>
+				<server>
+					<name>6</name>
+					<ip>192.168.1.12</ip>
+					<port>1234</port>
+					<maxnumberofmsg>1</maxnumberofmsg>
+				</server>
+			</servers>
+		</TCPQueue>
+
+	</ManagementUnit>
+	<SentimentProcessUint>
+		<SentimentRecognition type="StanfordSentimentTreebank">
+			<ip>127.0.0.1</ip>
+			<port>6000</port>
+		</SentimentRecognition>
+		<Queue type="TCP">
+			<port>1234</port>
+		</Queue>
+		<FeatureRecognition type="nltk">
+		</FeatureRecognition>
+	</SentimentProcessUint>
+</configuration>

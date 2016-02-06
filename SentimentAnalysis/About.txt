@@ -1,0 +1,2 @@
+TBD
+The sentiment engine responsibal for getting documents, parse them to sentences and determinalte what is sentence sentiment and what features sentece cantains. 

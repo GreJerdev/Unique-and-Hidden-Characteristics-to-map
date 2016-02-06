@@ -1,0 +1,7 @@
+http://www.microsoft.com/en-us/download/details.aspx?id=44266  Microsoft Visual C++ Compiler for Python 2.7
+nltk
+Twisted
+zope.interface
+pywin32  in windowns (http://sourceforge.net/projects/pywin32/)
+pip install wheel
+pip install MySQL_python-1.2.5-cp27-none-win_amd64.whl
