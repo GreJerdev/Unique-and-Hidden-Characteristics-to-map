@@ -1,6 +1,6 @@
 from configurationLoader import GetConfiguraton
-from SoureDataManager.FactorySoureDataManager import FactorySoureDataManager
-from FeatureDataManager.FactoryFeatureDataManager import FactoryFeatureDataManager 
+from SoureDataManager import FactorySoureDataManager
+from FeatureDataManager import FactoryFeatureDataManager 
 
 class QueryServer:
 
@@ -10,14 +10,24 @@ class QueryServer:
         self.__itemsDBProvider = FactorySoureDataManager.GetSourceDataManager(config)
 
     def GetItems(self, properties):
-        return self.__itemsDBProvider.GetItemsByCostomFilter(properties)
-
+        results = self.__itemsDBProvider.GetItemsByCostomFilter(properties)
+        itemsIds = list()
+        if len(results) > 0:
+            itemsIds = [id[1] for id in results[0]]
+        return itemsIds
+        
     def GetFeature(self, properties):
-        items = self.__itemsDBProvider(properties)
-        self.__GetItemReviewsId(items)
-        features = None
-        pass
+        items = self.GetItems(properties)
+        itemIds = [str(itemId) for itemId in items]
+        idsList = str(','.join(itemIds))
+        results = self.__featureDBProvider.GetFeatureOfItemsByIds(idsList)
+        itemsIds = list()
+        if len(results) > 0:
+            itemsIds = [row for row in results[0]]
+        return itemsIds
 
+        features = None
+       
     def GetSimilarItems(self, item):
         pass
 
@@ -43,9 +53,11 @@ server = None
 
 if __name__ == '__main__':
     configXml = GetConfiguraton(None)
-    server = QueryServer(configXml)   
-    p.lat = 43.18405
-    p.lon = -89.3229659
-    p.dis = 10
-    print server.GetItems(p)
-    
+     
+    server = QueryServer(configXml)
+    p = type('point', (object,), {}) 
+    p.lat = 33.5760986
+    p.lon = -112.0659298
+    p.dis = 2
+    #print len(server.GetItems(p))
+    print server.GetFeature(p)

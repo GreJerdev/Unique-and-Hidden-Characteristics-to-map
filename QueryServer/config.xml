@@ -2,7 +2,7 @@
 <configuration>
 	<QueryServer>
 		<FeatureDataManager type="mySQL">
-			<dbschemapostfix>rest_db</dbschemapostfix>
+			<databasename>sentiments_and_feature_for_rest_db</databasename>
 			<user>root</user> 
 			<password>1qaz2wsx</password> 
 			<host>127.0.0.1</host>

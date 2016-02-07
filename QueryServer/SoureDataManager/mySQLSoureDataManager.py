@@ -16,7 +16,7 @@ class mySQLSoureDataManager(BaseSoureDataManager):
 
     def GetItemsByCostomFilter(self, params):
         args = (params.lat,params.lon,params.dis)
-        return self.__CallProcWithOutParameter('usp_get_restorans_by_location',args,name)
+        return self.__CallProcWithParameter('usp_get_restorans_by_location',args)
 
     def GetFeatureOfItemsByIds(self, itemsIds):
         pass
@@ -35,8 +35,6 @@ class mySQLSoureDataManager(BaseSoureDataManager):
             password=self._Configuration.password, 
             host=self._Configuration.host, database=self._Configuration.databaseName)
             cursor = cnx.cursor()
-            #self.WriteLog(3,query)
-            #self.WriteLog(3,args)
             cursor.execute(query,args)
             results = list(cursor)
             cnx.commit()
@@ -49,19 +47,23 @@ class mySQLSoureDataManager(BaseSoureDataManager):
        
         return results
     
-    def __CallProcWithOutParameter(self,procName,args,name):
-        retVals = None
+    def __CallProcWithParameter(self,procName,args):
+        retVals = list()
         try:
-            cnx = mysql.connector.connect(user=self._Configuration.user, 
+            conn = mysql.connector.connect(user=self._Configuration.user, 
             password=self._Configuration.password, 
             host=self._Configuration.host, database=self._Configuration.databaseName)
-            cursor = cnx.cursor()
             cursor = conn.cursor()
  
-            result_args = cursor.callproc(procName, args)
+            cursor.callproc(procName, args)
+            cursor.fetchone()
+            results = cursor.stored_results()
+            for result in results:
+                table = list()
+                for row in result:
+                    table.append(row)
+                retVals.append(table)
             conn.commit()
-            retVals = result_args
- 
         except Error as e:
             self.WriteLog(4, e) 
              

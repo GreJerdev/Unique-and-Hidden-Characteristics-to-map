@@ -18,7 +18,8 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
         pass
 
     def GetFeatureOfItemsByIds(self, itemsIds):
-        pass
+        args = (itemsIds,)
+        return self.__CallProcWithParameter('csp_get_features_by_items_id',args)
 
     def GetFeatureSentimentsByItemId(self, itemId, featureId):
         pass
@@ -48,19 +49,22 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
        
         return results
     
-    def __CallProcWithOutParameter(self,procName,args,name):
-        retVals = None
+    def __CallProcWithParameter(self,procName,args):
+        retVals = list()
         try:
-            cnx = mysql.connector.connect(user=self._Configuration.user, 
+            conn = mysql.connector.connect(user=self._Configuration.user, 
             password=self._Configuration.password, 
             host=self._Configuration.host, database=self._Configuration.databaseName)
-            cursor = cnx.cursor()
             cursor = conn.cursor()
- 
-            result_args = cursor.callproc(procName, args)
+            cursor.callproc(procName, args)
+            cursor.fetchone()
+            results = cursor.stored_results()
+            for result in results:
+                table = list()
+                for row in result:
+                    table.append(row)
+                retVals.append(table)
             conn.commit()
-            retVals = result_args
- 
         except Error as e:
             self.WriteLog(4, e) 
              
