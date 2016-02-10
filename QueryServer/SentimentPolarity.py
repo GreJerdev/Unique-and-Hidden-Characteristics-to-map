@@ -8,7 +8,7 @@ VERY_NEGATIVE = -2
 
 ERROR_PERCENT = 5
 
-def CalculatePolaraty(polarityList):
+def CalculatePolarity(polarityList):
     polarity = IsNegativePositiveOrNeutral(polarityList);
     if polarity == POSITIVE:
         polarity = IsVeryPositiveOrPositive(polarityList)
@@ -48,4 +48,4 @@ def GetDeltaErrorValue(polarityList):
 
 
 
-print CalculatePolaraty(list([1,2,-2,-2,-1,-1,1,1,1,1,1]))
+

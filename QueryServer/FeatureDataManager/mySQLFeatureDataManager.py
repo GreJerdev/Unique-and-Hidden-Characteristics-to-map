@@ -13,20 +13,24 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
            self._logWriter.WriteLog(logLevel,messge)
         else:
            print(message)
+    def GetFeatureSentimentsByItemId(self, featureId, itemId ):
+        args = (featureId,itemId,)
+        return self.__CallProcWithParameter('csp_get_feature_sentence_by_item_id',args)
 
-    def GetItemsByCostomFilter(self, params):
+    def GetItemsIdByFeatureList(self, featureIds):
         pass
 
     def GetFeatureOfItemsByIds(self, itemsIds):
         args = (itemsIds,)
         return self.__CallProcWithParameter('csp_get_features_by_items_id',args)
-
-    def GetFeatureSentimentsByItemId(self, itemId, featureId):
-        pass
-
-    def GetItemsIdByFeatureList(self, featureIds):
-        pass
     
+    def  GetFeatureSentimentsByReviewId(self, featureId, reviewId):
+        args = (featureId, reviewId,)
+        return self.__CallProcWithParameter('csp_get_feature_sentence_by_review_id',args)
+
+    def GetFeatureSentimentsById(self, featureId):
+        args = (featureId,)
+        return self.__CallProcWithParameter('csp_get_feature_sentence_feature_id',args)
         
     def __ExecuteQuery(self, query, args=None):
         results = list()

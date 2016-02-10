@@ -16,4 +16,11 @@ class BaseFeatureDataManager(object):
     def GetItemsIdByFeatureList(self, featureIds):
         pass
 
+    def GetFeatureId(self, itemId, featureId):
+        pass
+
+    def GetFeatureReviewId(self, itemId, featureId):
+        pass
+
+    
     
