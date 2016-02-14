@@ -18,7 +18,8 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
         return self.__CallProcWithParameter('csp_get_feature_sentence_by_item_id',args)
 
     def GetItemsIdByFeatureList(self, featureIds):
-        pass
+        args = (featureIds,)
+        return self.__CallProcWithParameter('csp_get_items_by_featuresids',args)
 
     def GetFeatureOfItemsByIds(self, itemsIds):
         args = (itemsIds,)

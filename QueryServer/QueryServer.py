@@ -27,16 +27,17 @@ class QueryServer:
             itemsIds = [row for row in results[0]]
         return itemsIds
 
-        features = None
        
     def GetSimilarItems(self, item):
         pass
 
-    def GetSentimentPolarety(self, type, feature, level):
-        pass
-
     def GetItemsIdByFeatureList(self, featureList):
-        pass
+        featuresid = ','.join([str(feature) for feature in featureList])
+        results = self.__featureDBProvider.GetItemsIdByFeatureList(featuresid)
+        itemsIds = list()
+        if len(results) > 0:
+            itemsIds = [row for row in results[0]]
+        return itemsIds
 
     def ComperBetweenItems(self, itemsIdList):
         pass
@@ -83,6 +84,7 @@ if __name__ == '__main__':
     p.lat = 33.5760986
     p.lon = -112.0659298
     p.dis = 2
-    #print len(server.GetItems(p))
+    #print len(server.GetFeature(p))
     #print server.GetFeature(p)
-    print server.GetFeaturepolarityGlobal(6)
+    #print server.GetFeaturepolarityGlobal(6)
+    print server.GetItemsIdByFeatureList([1,2,3,4,5])
