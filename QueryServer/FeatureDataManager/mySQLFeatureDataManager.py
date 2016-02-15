@@ -25,14 +25,24 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
         args = (itemsIds,)
         return self.__CallProcWithParameter('csp_get_features_by_items_id',args)
     
-    def  GetFeatureSentimentsByReviewId(self, featureId, reviewId):
+    def GetFeatureSentimentsByReviewId(self, featureId, reviewId):
         args = (featureId, reviewId,)
         return self.__CallProcWithParameter('csp_get_feature_sentence_by_review_id',args)
 
     def GetFeatureSentimentsById(self, featureId):
         args = (featureId,)
         return self.__CallProcWithParameter('csp_get_feature_sentence_feature_id',args)
-        
+
+    def GetItemsFeaturesByItemsIds(self, itemsIds):
+        args = (itemsIds,)
+        result = {}
+        queryResult = self.__CallProcWithParameter('csp_get_items_features',args)
+        if len(queryResult) > 0:
+            itemsIds = [row for row in queryResult[0]]
+            for item in itemsIds:
+                result[item[0]] =  { int(f.split('|')[0]): float(f.split('|')[1]) for f in item[1].split(',')}
+        return result
+    
     def __ExecuteQuery(self, query, args=None):
         results = list()
         try:

@@ -2,6 +2,8 @@ from configurationLoader import GetConfiguraton
 from SoureDataManager import FactorySoureDataManager
 from FeatureDataManager import FactoryFeatureDataManager 
 from SentimentPolarity import CalculatePolarity
+from CompareItems import CreateCompareTableBetweenItems
+
 
 class QueryServer:
 
@@ -40,7 +42,12 @@ class QueryServer:
         return itemsIds
 
     def ComperBetweenItems(self, itemsIdList):
-        pass
+        itemsids  = ','.join([str(itemid) for itemid in itemsIdList])
+        results = self.__featureDBProvider.GetItemsFeaturesByItemsIds(itemsids)
+        results = CreateCompareTableBetweenItems( results)
+
+        return results
+        
 
     def GetFeaturesReview(self, listOFFeature, reviewId):
         pass
@@ -87,4 +94,4 @@ if __name__ == '__main__':
     #print len(server.GetFeature(p))
     #print server.GetFeature(p)
     #print server.GetFeaturepolarityGlobal(6)
-    print server.GetItemsIdByFeatureList([1,2,3,4,5])
+    print server.ComperBetweenItems([130,131,132])
