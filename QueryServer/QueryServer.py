@@ -2,7 +2,7 @@ from configurationLoader import GetConfiguraton
 from SoureDataManager import FactorySoureDataManager
 from FeatureDataManager import FactoryFeatureDataManager 
 from SentimentPolarity import CalculatePolarity
-from CompareItems import CreateCompareTableBetweenItems
+from CompareItems import CreateCompareTableBetweenItems,CalculateDistance
 
 
 class QueryServer:
@@ -31,7 +31,16 @@ class QueryServer:
 
        
     def GetSimilarItems(self, item):
-        pass
+        results = self.__featureDBProvider.GetItemsFeaturesByItemsIds('')
+        distanceDict = dict()
+        for i in results.keys():
+            if(not i == item):
+                d = {}
+                d[i] = results[i]
+                d[item] = results[item]
+                distance = CreateCompareTableBetweenItems(d)
+                distanceDict[i] = CalculateDistance(distance[i],distance[item])
+        return distanceDict
 
     def GetItemsIdByFeatureList(self, featureList):
         featuresid = ','.join([str(feature) for feature in featureList])
@@ -94,4 +103,6 @@ if __name__ == '__main__':
     #print len(server.GetFeature(p))
     #print server.GetFeature(p)
     #print server.GetFeaturepolarityGlobal(6)
-    print server.ComperBetweenItems([130,131,132])
+    distance =  server.GetSimilarItems(130)
+    print sorted(distance, key=distance.get, reverse=False)[:5]   
+    print server.ComperBetweenItems([130,5724])

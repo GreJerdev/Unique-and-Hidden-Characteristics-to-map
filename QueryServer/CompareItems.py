@@ -1,4 +1,4 @@
-
+from math import sqrt
 
 def CreateAllFeaturesDicEmptyDic(itemsAndFeatures):
     featureDic = {}
@@ -11,8 +11,9 @@ def CreateAllFeaturesDicEmptyDic(itemsAndFeatures):
 
 def CreateCompareTableBetweenItems(itemsAndFeatures):
     compareItemsDic = {}
+    emptyAllfeaturesDic = CreateAllFeaturesDicEmptyDic(itemsAndFeatures)
     for item in itemsAndFeatures.keys():
-        compareItemsDic[item] = CreateAllFeaturesDicEmptyDic(itemsAndFeatures)
+        compareItemsDic[item] = emptyAllfeaturesDic.copy()
         for featureId in itemsAndFeatures[item].keys():
              compareItemsDic[item][featureId] = itemsAndFeatures[item][featureId]
     return compareItemsDic
@@ -20,3 +21,6 @@ def CreateCompareTableBetweenItems(itemsAndFeatures):
 
 
 
+def CalculateDistance (dictFeatureA,dictFeatureB):
+        return sqrt(sum([(dictFeatureA[feature]-dictFeatureB[feature])**2 for feature in dictFeatureA.keys()]))
+    
