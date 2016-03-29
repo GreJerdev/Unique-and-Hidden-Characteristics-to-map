@@ -42,6 +42,28 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
             for item in itemsIds:
                 result[item[0]] =  { int(f.split('|')[0]): float(f.split('|')[1]) for f in item[1].split(',')}
         return result
+
+    def GetReviewsSentencesByFeatureIds(self, featuresIdsList):
+        featuresids = ','.join([str(feature) for feature in featuresIdsList])
+        args = (featuresids,)
+        print args
+        return self.__CallProcWithParameter('csp_get_reviews_sentences_by_features_ids',args)
+
+    def GetReviewsSentencesByItemsAndFeatureIds(self,itemsIdsList, featuresIdsList):
+        featuresids = ','.join([str(feature) for feature in featuresIdsList])
+        itemsids = ','.join([str(itemid) for itemid in itemsIdsList])
+        args = (itemsids,featuresids,)
+        return self.__CallProcWithParameter('csp_get_reviews_sentences_by_items_and_features_ids',args)
+        
+    def GetFeatureAsIsInSentences(self,sentencesIdsList, featuresIdsList):
+        featuresids = ','.join([str(feature) for feature in featuresIdsList])
+        sentencesids = ','.join([str(sentencesid) for sentencesid in sentencesIdsList])
+        args = (sentencesids,featuresids,)
+        result = {}
+        queryResult = self.__CallProcWithParameter('csp_get_feature_as_is_in_sentences',args)
+        if len(queryResult) > 0:
+            result = { (row[0],row[1]): row[4] for row in queryResult[0]}
+        return result
     
     def __ExecuteQuery(self, query, args=None):
         results = list()

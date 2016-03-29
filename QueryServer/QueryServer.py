@@ -3,6 +3,8 @@ from SoureDataManager import FactorySoureDataManager
 from FeatureDataManager import FactoryFeatureDataManager 
 from SentimentPolarity import CalculatePolarity
 from CompareItems import CreateCompareTableBetweenItems,CalculateDistance
+from ReviewHelper import ReviewHelper
+from CommonTypes import Polarity
 
 
 class QueryServer:
@@ -81,7 +83,15 @@ class QueryServer:
         polaritylist = self.__CreateListOfpolarityValuesFromSentences(listOfSentences)
         polarity = CalculatePolarity (polaritylist)
         return polarity
-    
+
+    def GetReviewsTextByItemIdAndFeatureIds(self,itemId, featureIdsList, polarity = Polarity.ALL):
+        reviewHalper = ReviewHelper(self.__featureDBProvider)
+        return reviewHalper.GetReviewsTextByItemIdAndFeatureIds(itemId, featureIdsList, polarity = Polarity.ALL)
+
+    def GetReviewsTextByFeatureIds(self, featureIdsList):
+        reviewHalper = ReviewHelper(self.__featureDBProvider)
+        return reviewHalper.GetReviewsTextByFeatureIds(featureIdsList)
+
     def __GetItemReviewsId(self, items):
         pass
     def __CreateListOfpolarityValuesFromSentences(self,listOfSentences):
@@ -89,9 +99,13 @@ class QueryServer:
         if len(listOfSentences) > 0 and len(listOfSentences[0]) > 0:
             polaritylist = list([pol[2] for pol in listOfSentences[0]])
         return polaritylist
-            
-server = None
 
+    def testDB(self):
+        rh = ReviewHelper(self.__featureDBProvider)
+        print len(rh.GetReviewsSentencesByFeatureIds([2,4]))
+
+server = None
+import codecs
 if __name__ == '__main__':
     configXml = GetConfiguraton(None)
      
@@ -100,9 +114,17 @@ if __name__ == '__main__':
     p.lat = 33.5760986
     p.lon = -112.0659298
     p.dis = 2
+    #server.testDB()
+    #ReviewHelper
     #print len(server.GetFeature(p))
     #print server.GetFeature(p)
     #print server.GetFeaturepolarityGlobal(6)
-    distance =  server.GetSimilarItems(130)
-    print sorted(distance, key=distance.get, reverse=False)[:5]   
-    print server.ComperBetweenItems([130,5724])
+    #distance =  server.GetSimilarItems(2406)
+    #print server.ComperBetweenItems([2406,5724])
+    #print server.GetReviewsTextByItemIdAndFeatureIds([130],['1390','225'])
+    with codecs.open("d:/yop.xml", "w", encoding="utf-8") as f:
+        for r in  server.GetReviewsTextByFeatureIds([133,131,132,130,141,1,2,3,4,1,54,34,65,34,234,654,34,7,6,87,80,87,67,655,887,766,996,455]):
+            f.write(r)
+
+    
+  
