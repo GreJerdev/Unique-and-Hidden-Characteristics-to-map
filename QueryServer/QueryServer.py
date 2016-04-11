@@ -20,6 +20,13 @@ class QueryServer:
         if len(results) > 0:
             itemsIds = [id[1] for id in results[0]]
         return itemsIds
+
+    def GetFeatureByItemId(self, ItemId):
+        results = self.__featureDBProvider.GetFeatureOfItemsByIds(ItemId)
+        itemsIds = list()
+        if len(results) > 0:
+            itemsIds = [row for row in results[0]]
+        return itemsIds
         
     def GetFeature(self, properties):
         items = self.GetItems(properties)
@@ -36,7 +43,8 @@ class QueryServer:
         results = self.__featureDBProvider.GetItemsFeaturesByItemsIds('')
         distanceDict = dict()
         for i in results.keys():
-            if(not i == item):
+            print i , item
+            if(not i == int(item)):
                 d = {}
                 d[i] = results[i]
                 d[item] = results[item]
@@ -58,27 +66,24 @@ class QueryServer:
         results = CreateCompareTableBetweenItems( results)
 
         return results
-        
 
-    def GetFeaturesReview(self, listOFFeature, reviewId):
-        pass
+    def GetItemReviewsIdByItemId(self, itemId):     
+        results = self.__featureDBProvider.GetItemReviewsIdByItemId(itemId)
+        return results
 
-    def GetListOfFeatureReviews(self, feature, item):
-        pass
-
-    def GetFeaturepolarityInItemReviews(self,featureId,itemId):
+    def GetFeaturePolarityInItemReviews(self,featureId,itemId):
         listOfSentences = self.__featureDBProvider.GetFeatureSentimentsByItemId(featureId,itemId)
         polaritylist = self.__CreateListOfpolarityValuesFromSentences(listOfSentences)
         polarity = CalculatePolarity(polaritylist)
         return polarity
 
-    def GetFeaturepolarityInReviews(self,featureId,reviewId):
+    def GetFeaturePolarityInReviews(self,featureId,reviewId):
         listOfSentences = self.__featureDBProvider.GetFeatureSentimentsByReviewId(featureId,reviewId)
         polaritylist = self.__CreateListOfpolarityValuesFromSentences(listOfSentences)
         polarity = CalculatePolarity (polaritylist)
         return polarity
 
-    def GetFeaturepolarityGlobal(self,featureId):
+    def GetFeaturePolarityGlobal(self,featureId):
         listOfSentences = self.__featureDBProvider.GetFeatureSentimentsById(featureId)
         polaritylist = self.__CreateListOfpolarityValuesFromSentences(listOfSentences)
         polarity = CalculatePolarity (polaritylist)
@@ -94,15 +99,13 @@ class QueryServer:
 
     def __GetItemReviewsId(self, items):
         pass
+    
     def __CreateListOfpolarityValuesFromSentences(self,listOfSentences):
         polaritylist = list()
         if len(listOfSentences) > 0 and len(listOfSentences[0]) > 0:
             polaritylist = list([pol[2] for pol in listOfSentences[0]])
         return polaritylist
 
-    def testDB(self):
-        rh = ReviewHelper(self.__featureDBProvider)
-        print len(rh.GetReviewsSentencesByFeatureIds([2,4]))
 
 server = None
 import codecs
