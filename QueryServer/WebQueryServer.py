@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request
+from flask import jsonify
 from configurationLoader import GetConfiguraton
 
 from QueryServer import QueryServer
@@ -34,10 +35,13 @@ def GetItems():
         float(lat)
         float(lon)
     except ValueError:
+        print 'error'
         return '[]'
+        
     p.lat = lat
     p.lon = lon
-    responce = str(query.GetItems(p))
+    items = query.GetItems(p)
+    responce = jsonify({'items':items})
     return  responce
 
 

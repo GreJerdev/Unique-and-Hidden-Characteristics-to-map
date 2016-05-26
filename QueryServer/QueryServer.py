@@ -5,7 +5,7 @@ from SentimentPolarity import CalculatePolarity
 from CompareItems import CreateCompareTableBetweenItems,CalculateDistance
 from ReviewHelper import ReviewHelper
 from CommonTypes import Polarity
-
+import QObjects 
 
 class QueryServer:
 
@@ -18,7 +18,7 @@ class QueryServer:
         results = self.__itemsDBProvider.GetItemsByCostomFilter(properties)
         itemsIds = list()
         if len(results) > 0:
-            itemsIds = [id[1] for id in results[0]]
+            itemsIds = [QObjects.Item_to_dict(id) for id in results[0]]
         return itemsIds
 
     def GetFeatureByItemId(self, ItemId):
