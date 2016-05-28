@@ -12,18 +12,13 @@ def index():
 
 @app.route('/getitemsnearme', methods=['GET', 'POST'])
 def getItemsNearMe():
-    print '-----1'
     try:
-       print '-----2'
        lat = request.args.get('lat', '')
-       print '-----3'
        lon = request.args.get('lon', '')
-       print '----4'
-       print lon +' d--'+ lat
+       print lat
+       print lon
        args = '?lat={0}&lon={1}'.format(lat,lon)
-       print args
        url = "http://127.0.0.1:5000/getitems"+args
-       print url
        itemsInStrArr = urllib2.urlopen(url).read()
        print itemsInStrArr
        
