@@ -30,12 +30,13 @@ class QueryServer:
         
     def GetFeature(self, properties):
         items = self.GetItems(properties)
-        itemIds = [str(itemId) for itemId in items]
+        itemIds = [str(itemId['id']) for itemId in items]
         idsList = str(','.join(itemIds))
         results = self.__featureDBProvider.GetFeatureOfItemsByIds(idsList)
         itemsIds = list()
         if len(results) > 0:
             itemsIds = [row for row in results[0]]
+        print len(itemsIds)
         return itemsIds
 
        

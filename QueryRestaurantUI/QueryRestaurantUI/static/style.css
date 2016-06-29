@@ -1,0 +1,20 @@
+
+.row-max-height{
+	height:100%
+}
+
+.item-info-window
+{
+flex-direction: column;
+    text-align: left;
+    overflow: visible;
+    position: absolute;
+    height: 100%;
+    width: 20%;
+	z-index:100;
+	 background-color:#fff;
+	 box-shadow: 2px 2px 2px #888888;
+}
+
+  #map {
+        height: 100%;}

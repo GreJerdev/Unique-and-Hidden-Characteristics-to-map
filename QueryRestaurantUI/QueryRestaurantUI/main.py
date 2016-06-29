@@ -5,12 +5,13 @@ from flask import Flask
 from flask import request
 import urllib2
 import ast
+import locations
 
 @app.route('/')
 def index():
     return render_template('main.html')
 
-@app.route('/getitemsnearme', methods=['GET', 'POST'])
+'''@app.route('/getitemsnearme', methods=['GET', 'POST'])
 def getItemsNearMe():
     try:
        lat = request.args.get('lat', '')
@@ -26,7 +27,7 @@ def getItemsNearMe():
     except:
        e = sys.exc_info()[0]
        print e  
-    return jsonify({'items':items})
+    return jsonify({'items':items})'''
 
 @app.route('/allpoints')
 def getAlllocations():
@@ -845,11 +846,4 @@ def getAlllocations():
    
     return jsonify({'points':dataarr})
 
-'''import httplib
->>> conn = httplib.HTTPSConnection("www.python.org")
->>> conn.request("GET", "/")
->>> r1 = conn.getresponse()
->>> print r1.status, r1.reason
-200 OK
->> data1 = r1.read()
-'''
+
