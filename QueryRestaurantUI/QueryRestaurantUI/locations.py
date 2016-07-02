@@ -14,6 +14,28 @@ def getEngineUrl():
     return '{0}://{1}:{2}'.format(protocol,serverUrl,port)
 
 print getEngineUrl()
+             
+@app.route('/getitemswithfeatures', methods=['GET', 'POST'])
+def getItemsWithfeatures():
+    try:
+       items = request.args.get('items', '')
+       features = request.args.get('features', '')
+       print str(items) + 'items'
+       print features
+       
+       args = '?items={0}&features={1}'.format(items,features)
+       url = getEngineUrl()+"/getitemswithfeatures"+args
+        
+       print url 
+       itemsInStrArr = urllib2.urlopen(url).read()
+        
+       print itemsInStrArr
+       print url
+       items = ast.literal_eval(itemsInStrArr)
+    except:
+       e = sys.exc_info()[0]
+       print e  
+    return jsonify({'items':items})
 
 @app.route('/getitemsnearme', methods=['GET', 'POST'])
 def getItemsNearMe():

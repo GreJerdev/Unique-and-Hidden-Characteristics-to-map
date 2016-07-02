@@ -17,6 +17,7 @@ def GetFeatures():
     try:
         float(lat)
         float(lon)
+        print "hellow Irina"
     except ValueError:
         return '[]'
     p.lat = lat
@@ -170,6 +171,28 @@ def GetReviewsTextByFeatureIds():
         #print  sys.exc_info()
         #print "END OF ERROR"
     return  responce
+
+@app.route('/getitemswithfeatures', methods=['GET', 'POST'])
+def getItemsWithFeatures():
+    try:     
+        itemsStr = request.args.get('items', '')
+        featuresStr = request.args.get('features', '')
+        items = itemsStr.split(',')
+        features = featuresStr.strip(',').split(',')
+        items = [i for i in items if len(i) > 0  ]
+        features = [f for f in features if len(f) > 0  ]
+        print '--features--'
+        print features
+        print '--items--'
+        print items
+        result = query.GetItemsWithFeatures(items,features)
+        print 'result'
+        print result
+        responce = str(result)
+    except:
+        e = sys.exc_info()[0]
+        print e  
+    return responce
         
 if __name__ == "__main__":
     configXml = GetConfiguraton(None)

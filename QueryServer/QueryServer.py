@@ -98,6 +98,14 @@ class QueryServer:
         reviewHalper = ReviewHelper(self.__featureDBProvider)
         return reviewHalper.GetReviewsTextByFeatureIds(featureIdsList)
 
+    def GetItemsWithFeatures(self,items,features):
+        features_items = self.GetItemsIdByFeatureList(features)
+      
+        itemsId = [item[0] for item in features_items]
+        itemsAsInt = [int(item) for item in items if len(item) > 0]
+        result = [item for item in itemsAsInt if item in itemsId]
+        return result
+
     def __GetItemReviewsId(self, items):
         pass
     
@@ -107,6 +115,7 @@ class QueryServer:
             polaritylist = list([pol[2] for pol in listOfSentences[0]])
         return polaritylist
 
+    
 
 server = None
 import codecs
@@ -118,6 +127,10 @@ if __name__ == '__main__':
     p.lat = 33.5760986
     p.lon = -112.0659298
     p.dis = 2
+
+    arr = [9620,6127,6185,7739,12450,237,5950,280,4230,9793,222,12428,5621,5568,6206,13781,245,2243,2256,6201,13491,2254,11619,10088,226,3742,292,4488,13915]
+    feat = [61]
+    server.GetItemsWithFeatures(arr,feat)
     #server.testDB()
     #ReviewHelper
     #print len(server.GetFeature(p))
@@ -126,9 +139,9 @@ if __name__ == '__main__':
     #distance =  server.GetSimilarItems(2406)
     #print server.ComperBetweenItems([2406,5724])
     #print server.GetReviewsTextByItemIdAndFeatureIds([130],['1390','225'])
-    with codecs.open("d:/yop.xml", "w", encoding="utf-8") as f:
-        for r in  server.GetReviewsTextByFeatureIds([133,131,132,130,141,1,2,3,4,1,54,34,65,34,234,654,34,7,6,87,80,87,67,655,887,766,996,455]):
-            f.write(r)
+    #with codecs.open("d:/yop.xml", "w", encoding="utf-8") as f:
+    #    for r in  server.GetReviewsTextByFeatureIds([133,131,132,130,141,1,2,3,4,1,54,34,65,34,234,654,34,7,6,87,80,87,67,655,887,766,996,455]):
+    #        f.write(r)
 
     
   
