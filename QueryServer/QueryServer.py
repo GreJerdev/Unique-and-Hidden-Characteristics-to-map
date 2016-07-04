@@ -106,6 +106,19 @@ class QueryServer:
         result = [item for item in itemsAsInt if item in itemsId]
         return result
 
+    def GetAllItems(self):
+        results = self.__itemsDBProvider.GetAllItems()
+        itemsIds = [QObjects.Item_to_dict(id) for id in results[0]]
+        return itemsIds
+
+    def GetAllFeatures(self):
+        itemsIds = list()
+        results = self.__featureDBProvider.GetAllFeatures()
+        if len(results) > 0:
+            itemsIds = [row for row in results[0]]
+        print len(itemsIds)
+        return itemsIds
+    
     def __GetItemReviewsId(self, items):
         pass
     
@@ -130,7 +143,8 @@ if __name__ == '__main__':
 
     arr = [9620,6127,6185,7739,12450,237,5950,280,4230,9793,222,12428,5621,5568,6206,13781,245,2243,2256,6201,13491,2254,11619,10088,226,3742,292,4488,13915]
     feat = [61]
-    server.GetItemsWithFeatures(arr,feat)
+    #server.GetItemsWithFeatures(arr,feat)
+    print server.GetAllItems()
     #server.testDB()
     #ReviewHelper
     #print len(server.GetFeature(p))

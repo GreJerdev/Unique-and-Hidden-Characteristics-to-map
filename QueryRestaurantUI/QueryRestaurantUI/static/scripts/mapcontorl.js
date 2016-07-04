@@ -142,7 +142,41 @@ MainControl.GoogleMapHelper = (function(){
 		});
 		}		
 	}
-	  
+	function showAll(){
+		   $.ajax ({
+        type: "GET",
+        url:"allpoints",
+        data:  {},
+		success: function(results) {
+
+            console.log(results.items)
+            deleteMarkers();
+			selectedFeatures = [];
+            results.items.items.forEach(function(point){
+			    var loc =  {lat: parseFloat( point.lat), lng: parseFloat( point.lng)};
+                console.log(loc);
+
+               MainControl.GoogleMapHelper.addMarker(loc,point.Name,point.id);
+            })
+
+        }
+    });
+            $.ajax ({
+        type: "GET",
+        url:"allfeatures",
+        data:  {},
+		success: function(results) {
+			
+			var text = '';
+			for (i = 0; i < results.features.length; i++) { 
+				text += '<button type="button" class="btn btn-default" feature="'+results.features[i][1]+'" onclick="MainControl.GoogleMapHelper.featureClick('+results.features[i][1]+')">'+results.features[i][0]+ '('+results.features[i][2]+')'+'</button>'
+			}
+			$('#homeInfo').html(text);
+            
+
+        }
+	});
+	}
 	function featureClick(id){
 		itemIndex = $.inArray(id, selectedFeatures)
 		if( itemIndex >= 0){
@@ -160,6 +194,7 @@ MainControl.GoogleMapHelper = (function(){
             addMarker:addMarker,   
             isInit :isInit,
 			featureClick:featureClick,
+			ShowAll:showAll,
         };
 })();
 				

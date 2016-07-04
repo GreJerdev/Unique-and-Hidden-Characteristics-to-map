@@ -69,6 +69,9 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
         if len(queryResult) > 0:
             result = { (row[0],row[1]): row[4] for row in queryResult[0]}
         return result
+
+    def GetAllFeatures(self):
+        return self.__CallProcWithParameter('csp_get_all_features',())
     
     def __ExecuteQuery(self, query, args=None):
         results = list()

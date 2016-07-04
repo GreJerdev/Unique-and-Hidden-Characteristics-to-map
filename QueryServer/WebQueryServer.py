@@ -7,6 +7,18 @@ from QueryServer import QueryServer
 app = Flask(__name__)
 query = None
 
+
+@app.route("/getallfeatures",methods=['GET'])
+def GetAllFeatures():
+    responce = str(query.GetAllFeatures())
+    return  responce
+
+@app.route("/getallitems",methods=['GET'])
+def GetAllItems():
+    items = query.GetAllItems()
+    responce = jsonify({'items':items})
+    return  responce
+
 @app.route("/getfeatures",methods=['GET'])
 def GetFeatures():
     p = type('point', (object,), {}) 

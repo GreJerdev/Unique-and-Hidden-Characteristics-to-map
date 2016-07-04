@@ -26,8 +26,10 @@ class mySQLSoureDataManager(BaseSoureDataManager):
 
     def GetItemsIdByFeatureList(self, featureIds):
         pass
-    
         
+    def GetAllItems(self):
+        return self.__CallProcWithParameter('usp_get_all_restorans',())
+       
     def __ExecuteQuery(self, query, args=None):
         results = list()
         try:
@@ -58,11 +60,13 @@ class mySQLSoureDataManager(BaseSoureDataManager):
             cursor.callproc(procName, args)
             cursor.fetchone()
             results = cursor.stored_results()
+            
             for result in results:
                 table = list()
                 for row in result:
                     table.append(row)
                 retVals.append(table)
+                
             conn.commit()
         except Error as e:
             self.WriteLog(4, e) 
