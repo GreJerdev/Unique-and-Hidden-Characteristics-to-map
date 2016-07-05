@@ -44,7 +44,6 @@ class QueryServer:
         results = self.__featureDBProvider.GetItemsFeaturesByItemsIds('')
         distanceDict = dict()
         for i in results.keys():
-            print i , item
             if(not i == int(item)):
                 d = {}
                 d[i] = results[i]
