@@ -6,6 +6,7 @@ from CompareItems import CreateCompareTableBetweenItems,CalculateDistance
 from ReviewHelper import ReviewHelper
 from CommonTypes import Polarity
 import QObjects 
+import json
 
 class QueryServer:
 
@@ -23,6 +24,7 @@ class QueryServer:
 
     def GetFeatureByItemId(self, ItemId):
         results = self.__featureDBProvider.GetFeatureOfItemsByIds(ItemId)
+      
         itemsIds = list()
         if len(results) > 0:
             itemsIds = [row for row in results[0]]
@@ -105,6 +107,10 @@ class QueryServer:
         result = [item for item in itemsAsInt if item in itemsId]
         return result
 
+    def GetItemReview(reviewId):
+        GetReviewsTextByItemIdAndFeatureIds
+        pass
+    
     def GetAllItems(self):
         results = self.__itemsDBProvider.GetAllItems()
         itemsIds = [QObjects.Item_to_dict(id) for id in results[0]]
@@ -117,7 +123,12 @@ class QueryServer:
             itemsIds = [row for row in results[0]]
         print len(itemsIds)
         return itemsIds
-    
+
+    def GetReviewSentencesById(self, reviewId):
+        reviewHalper = ReviewHelper(self.__featureDBProvider)
+        results = reviewHalper.GetReviewTestByReviewId(reviewId) 
+        return results
+        
     def __GetItemReviewsId(self, items):
         pass
     
@@ -143,7 +154,12 @@ if __name__ == '__main__':
     arr = [9620,6127,6185,7739,12450,237,5950,280,4230,9793,222,12428,5621,5568,6206,13781,245,2243,2256,6201,13491,2254,11619,10088,226,3742,292,4488,13915]
     feat = [61]
     #server.GetItemsWithFeatures(arr,feat)
-    print server.GetAllItems()
+    #itemFeatures = [feature[1] for feature in server.GetFeatureByItemId('131,')]
+    #print itemFeatures
+    #print server.GetReviewsTextByItemIdAndFeatureIds('131',itemFeatures)
+    review = server.GetReviewSentencesById('2396')
+    print json.dumps(review.__dict__) 
+    #print server.GetAllItems()
     #server.testDB()
     #ReviewHelper
     #print len(server.GetFeature(p))

@@ -30,7 +30,7 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
         args = (itemsIds,)
         return self.__CallProcWithParameter('csp_get_features_by_items_id',args)
     
-    def GetFeatureSentimentsByReviewId(self, featureId, reviewId):
+    def GetFeatureSentenceByReviewId(self, featureId, reviewId):
         args = (featureId, reviewId,)
         return self.__CallProcWithParameter('csp_get_feature_sentence_by_review_id',args)
 
@@ -59,6 +59,11 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
         itemsids = ','.join([str(itemid) for itemid in itemsIdsList])
         args = (itemsids,featuresids,)
         return self.__CallProcWithParameter('csp_get_reviews_sentences_by_items_and_features_ids',args)
+
+    def GetReviewSentencesById(self,reviewId):
+        args = (reviewId,)
+        return self.__CallProcWithParameter('csp_get_review_sentences_by_id',args)
+
         
     def GetFeatureAsIsInSentences(self,sentencesIdsList, featuresIdsList):
         featuresids = ','.join([str(feature) for feature in featuresIdsList])
@@ -72,6 +77,9 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
 
     def GetAllFeatures(self):
         return self.__CallProcWithParameter('csp_get_all_features',())
+
+    def GetReviewSentencesByReviewId(self, id):
+        return self.__CallProcWithParameter('csp_get_review_sentences',(id,))
     
     def __ExecuteQuery(self, query, args=None):
         results = list()
