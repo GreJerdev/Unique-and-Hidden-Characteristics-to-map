@@ -4,6 +4,8 @@ from flask import jsonify
 from configurationLoader import GetConfiguraton
 
 from QueryServer import QueryServer
+import tools
+
 app = Flask(__name__)
 query = None
 
@@ -205,6 +207,23 @@ def getItemsWithFeatures():
         e = sys.exc_info()[0]
         print e  
     return responce
+
+@app.route('/getreviewsentencesbyid', methods=['GET', 'POST'])
+def GetReviewSentencesById():
+    id = request.args.get('id', '')
+    result = {}
+    if tools.IsInt(id):
+        result = query.GetItemsWithFeatures(id)
+        print 3289
+    return result
+
+@app.route('/getreviewsentencesbyitemid', methods=['GET', 'POST'])
+def GetReviewsTextByItemId():
+    id = request.args.get('id', '')
+    result = {}
+    if tools.IsInt(id):
+        result = query.GetReviewsTextByItemId(id)
+    return str(result)
         
 if __name__ == "__main__":
     configXml = GetConfiguraton(None)

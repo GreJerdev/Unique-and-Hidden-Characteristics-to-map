@@ -2,7 +2,7 @@ from SentimentPolarity import CalculatePolarity
 from CommonTypes import Polarity
 from collections import OrderedDict
 from QObjects import SentenceMember, Sentence, Review, Item
-
+import time
 
 class ReviewHelper(object):
     __featureProvider = None
@@ -12,7 +12,7 @@ class ReviewHelper(object):
        
     def GetReviewsSentencesByFeatureIds(self, featureidsList):
         
-        print self.__featureProvider.GetReviewsSentencesByFeatureIds(featureidsList)[0]
+        return self.__featureProvider.GetReviewsSentencesByFeatureIds(featureidsList)[0]
 
     def GetReviewsTextByItemIdAndFeatureIds(self,itemId, featureIdsList, polarity = Polarity.ALL):
         #1.get all reviews sentences
@@ -26,7 +26,7 @@ class ReviewHelper(object):
         return self.MergeToReview(listOfSentences[0], featureIdsList)
 
     def GetReviewsTextByItemId(self, itemId):
-        listOfSentences = self.__featureProvider.GetReviewsSentencesByFeatureIds(itemId)
+        listOfSentences = self.__featureProvider.GetReviewSentencesByItemId(itemId)
         return self.__GetItemObject(itemId, listOfSentences[0])
 
     def GetReviewTestByReviewId(self, reviewId):
@@ -81,6 +81,7 @@ class ReviewHelper(object):
         return dict([(sentence[5],sentence[3])  for sentence in  list( filter((lambda s: s[0] == sentenceId), listOfSentences))])
 
     def __GetSentenceObjects(self, sentenceId, listOfSentences):
+       
         sentence = Sentence()
         sentenceList = list (filter((lambda s: s[0] == sentenceId), listOfSentences))
         featuresDict = self.__GetListOfSentenceFeatures( sentenceId, sentenceList)
@@ -104,23 +105,27 @@ class ReviewHelper(object):
             member = SentenceMember()
             member.SetText(sentenceText)
             sentence.AddMember(member)
+        
         return sentence
         
     def __GetReviewObjects(self, reviewId, listOfSentences):
         review = Review()
         listOfReviewSentencesId = self.__GetListOfReviewSentecesId(reviewId, listOfSentences)
-        review.id = reviewId
+        review.SetId(reviewId)
+       
         for sentencesId in listOfReviewSentencesId:
             review.AddSentence(self.__GetSentenceObjects(sentencesId, listOfSentences))
-        review.polarity = CalculatePolarity(review.GetListOfSentencesPolarity())
+       
+        review.SetPolarity(CalculatePolarity(review.GetListOfSentencesPolarity()))
         return review
        
     def __GetItemObject(self, itemid, listOfSentences):
         item = Item()
         listOfItemsReviewsId = self.__GetListOfReviewsId( listOfSentences)
-        item.id = itemid
+        item.SetId(itemid)
+        item.SetPolarity(CalculatePolarity([sentence[7] for sentence in listOfSentences]))
+       
         for reviewId in listOfItemsReviewsId:
-            item.AddReview(self.__GetReviewObjects(reviewId, listOfSentences))  
-            
-        item.polarity = CalculatePolarity([sentence[7] for sentence in listOfSentences])
+            listOfReviewSentences = [s for s in listOfSentences if s[1] == reviewId]
+            item.AddReview(self.__GetReviewObjects(reviewId, listOfReviewSentences))
         return item

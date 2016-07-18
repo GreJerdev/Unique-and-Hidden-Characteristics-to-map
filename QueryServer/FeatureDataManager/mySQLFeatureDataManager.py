@@ -80,7 +80,10 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
 
     def GetReviewSentencesByReviewId(self, id):
         return self.__CallProcWithParameter('csp_get_review_sentences',(id,))
-    
+
+    def GetReviewSentencesByItemId(self, id):
+        return self.__CallProcWithParameter('csp_get_reviews_sentences_by_item_id',(id,))
+
     def __ExecuteQuery(self, query, args=None):
         results = list()
         try:

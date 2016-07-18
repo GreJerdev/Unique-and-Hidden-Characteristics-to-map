@@ -128,7 +128,12 @@ class QueryServer:
         reviewHalper = ReviewHelper(self.__featureDBProvider)
         results = reviewHalper.GetReviewTestByReviewId(reviewId) 
         return results
-        
+
+    def GetReviewsTextByItemId(self, itemId):
+        reviewHalper = ReviewHelper(self.__featureDBProvider)
+        results = reviewHalper.GetReviewsTextByItemId(itemId) 
+        return results 
+    
     def __GetItemReviewsId(self, items):
         pass
     
@@ -157,8 +162,8 @@ if __name__ == '__main__':
     #itemFeatures = [feature[1] for feature in server.GetFeatureByItemId('131,')]
     #print itemFeatures
     #print server.GetReviewsTextByItemIdAndFeatureIds('131',itemFeatures)
-    review = server.GetReviewSentencesById('2305')
-    print review 
+    review = server.GetReviewsTextByItemId('130')
+     
     
     #print server.GetAllItems()
     #server.testDB()

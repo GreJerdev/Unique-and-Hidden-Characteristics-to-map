@@ -89,7 +89,8 @@ class Review(dict):
 
 class Item(dict):
 
-    def __init__(self):
+    def __init__(self,temperature = 0):
+        self._temperature = temperature
         self.SetPolarity(0)
         self.SetId(0)
         self['reviews'] = [] 
@@ -102,7 +103,7 @@ class Item(dict):
 
     def GetPolarity(self):
         return self['polarity'] 
-        
+
     def GetId(self):
         return self['id']
 
