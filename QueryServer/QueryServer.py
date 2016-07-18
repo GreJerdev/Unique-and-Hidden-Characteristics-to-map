@@ -157,8 +157,9 @@ if __name__ == '__main__':
     #itemFeatures = [feature[1] for feature in server.GetFeatureByItemId('131,')]
     #print itemFeatures
     #print server.GetReviewsTextByItemIdAndFeatureIds('131',itemFeatures)
-    review = server.GetReviewSentencesById('2396')
-    print json.dumps(review.__dict__) 
+    review = server.GetReviewSentencesById('2305')
+    print review 
+    
     #print server.GetAllItems()
     #server.testDB()
     #ReviewHelper

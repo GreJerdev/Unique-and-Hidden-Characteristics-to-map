@@ -85,8 +85,8 @@ class ReviewHelper(object):
         sentenceList = list (filter((lambda s: s[0] == sentenceId), listOfSentences))
         featuresDict = self.__GetListOfSentenceFeatures( sentenceId, sentenceList)
         sentenceText = sentenceList[0][2]
-        sentence.id = sentenceId
-        sentence.polarity = sentenceList[0][7]
+        sentence.SetId(sentenceId)
+        sentence.SetPolarity(sentenceList[0][7])
         if len(featuresDict) > 0 :
             for feature in featuresDict.keys():
                 if feature is not None:
@@ -95,16 +95,15 @@ class ReviewHelper(object):
             for member in members:
                 sMember = SentenceMember()
                 if member in featuresDict.keys():
-                    sMember.text = member
-                    sMember.id = featuresDict[member]
+                    sMember.SetText(member)
+                    sMember.SetFeatureId(featuresDict[member])
                 else:
-                    sMember.text = member
+                    sMember.SetText(member)
                 sentence.AddMember(sMember)
         else:
             member = SentenceMember()
-            member.text = sentenceText
+            member.SetText(sentenceText)
             sentence.AddMember(member)
-        
         return sentence
         
     def __GetReviewObjects(self, reviewId, listOfSentences):
@@ -113,8 +112,7 @@ class ReviewHelper(object):
         review.id = reviewId
         for sentencesId in listOfReviewSentencesId:
             review.AddSentence(self.__GetSentenceObjects(sentencesId, listOfSentences))
-        print review.sentences    
-        review.polarity = CalculatePolarity([sentence.polarity for sentence in review.sentences])
+        review.polarity = CalculatePolarity(review.GetListOfSentencesPolarity())
         return review
        
     def __GetItemObject(self, itemid, listOfSentences):

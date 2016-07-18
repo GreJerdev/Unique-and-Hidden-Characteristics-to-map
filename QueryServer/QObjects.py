@@ -12,46 +12,103 @@ def Item_to_dict(row):
     d['distance'] = row[4]
     return d
 
-class SentenceMember(object):
-    text = ""
-    featureId = ""
-    def __str__(self):
-        return str(self.__dict__)
+class SentenceMember(dict):
 
 
+    def SetText(self,text):
+        self['text'] = text
+        
+    def SetFeatureId(self,text):
+        self['featureId'] = text
 
-class Sentence(object):
+    def GetText(self):
+        return self['text'] 
+        
+    def GetFeatureId(self):
+        return self['featureId'] 
 
-    polarity = 0
-    id = 0
-    members = []
+        
+    
+
+class Sentence(dict):   
+
+    def __init__(self):
+        self.SetPolarity(0)
+        self.SetId(0)
+        self['members'] = [] 
+
+    def SetPolarity(self,text):
+        self['polarity'] = text
+
+    def SetId(self,text):
+        self['id'] = text
+
+    def GetPolarity(self):
+        return self['polarity'] 
+        
+    def GetId(self):
+        return self['id']
+
+    def GetMembers(self):
+        return self['members'] 
 
     def AddMember(self, member):
-        self.members.append(member)
+        self['members'].append(member)
         
-    def __str__(self):
-        return str(self.__dict__)+ str(self.members)
+   
+class Review(dict):
 
-class Review(object):
+    def __init__(self):
+        self.SetPolarity(0)
+        self.SetId(0)
+        self['sentences'] = [] 
 
-    polarity = 0
-    id = 0
-    sentences = []
+    def SetPolarity(self, polarity):
+        self['polarity'] = polarity
 
+    def SetId(self,text):
+        self['id'] = text
+
+    def GetPolarity(self):
+        return self['polarity'] 
+        
+    def GetId(self):
+        return self['id']
+
+    def GetSentence(self):
+        return self['sentences']
+
+    
     def AddSentence(self, sentence):
-        self.sentences.append(sentence)
+        self['sentences'].append(sentence)
 
-    def __str__(self):
-        return str(self.__dict__) + str(self.sentences)
+    def GetListOfSentencesPolarity(self):
+        return  [sentence['polarity'] for sentence in self.GetSentence() if 'polarity' in sentence.keys()]
+        
+                                                                        
 
-class Item(object):
+class Item(dict):
 
-    polarity = 0
-    id = 0
-    reviews = []
+    def __init__(self):
+        self.SetPolarity(0)
+        self.SetId(0)
+        self['reviews'] = [] 
 
-    def AddReview(self, review):
-        self.reviews.append(review)
+    def SetPolarity(self, polarity):
+        self['polarity'] = polarity
 
-    def __str__(self):
-        return str(self.__dict__)
+    def SetId(self,text):
+        self['id'] = text
+
+    def GetPolarity(self):
+        return self['polarity'] 
+        
+    def GetId(self):
+        return self['id']
+
+    def GetReview(self):
+        return self['reviews']
+    
+    def AddReview(self, sentence):
+        self['reviews'].append(sentence)
+
