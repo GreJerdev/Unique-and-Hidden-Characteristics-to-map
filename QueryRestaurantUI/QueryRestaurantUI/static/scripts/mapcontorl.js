@@ -22,7 +22,7 @@ MainControl.GoogleMapHelper = (function () {
             fillOpacity: 0.35,
             map: map,
             center: event.latLng,
-            radius: 3.1 * 1000
+            radius: 3.21869 * 1000
         });
         searchCircle.addListener('click', mapOnClick)
     }
@@ -54,33 +54,60 @@ MainControl.GoogleMapHelper = (function () {
             infowindow.open(map, marker);
             marker.setIcon('http://maps.google.com/mapfiles/kml/paddle/ylw-circle.png')
             showItemDetails(id);
-            $('#itemInfo').html(text);
-            $('#itemInfo').show();
+            //$('#itemInfo').html(text);
+            //$('#itemInfo').show();
         });
         markers.push(marker);
         infowindows.push(infowindow);
     }
 
+    function createReview(review){
+        var reviewHtml = '<div class="row"> <div polarity="'+review.polarity+'" reviewid="'+review.id+'">';
+        for(r = 0; r <review.sentences.length; r++){
+            var colorClass = 'bg-warning'
+            if(colorClass != 0){
+                colorClass = review.sentences[r].polarity > 0 ? 'bg-success' : 'bg-danger';
+            }
+            var sentenceHtml = '<div class="'+colorClass+'">';
+            for(j=0; j <review.sentences[r].members.length; j++){
+                var member = review.sentences[r].members[j]
+                var memberHtml = ''
+                if ( member.hasOwnProperty('featureId') ) {
+                    memberHtml = '<a href="#" onclick="return '+member.featureId+';">'+member.text+'</a>'
+                }
+                else{
+                    memberHtml = member.text;
+                }
+                sentenceHtml += memberHtml
+            }
+            sentenceHtml += '</div>'
+            reviewHtml += sentenceHtml
+        }
+        reviewHtml+= '</div></div><div class="row">__</div>'
+        return reviewHtml;
+    }
+
     function showItemDetails(id) {
-        /*$.ajax({
+        $.ajax({
             type: "GET",
-            url: itemUrl,
+            url: 'getreviewsentencesbyitemid',
             data: {id:id},
             success: function (results) {
+                var reviewsHtml = '';
+                debugger;
+                if(results.reviews.constructor === Array){
+                var i = 0;
+                for(i = 0; i < results.reviews.length; i++){
+                    reviewsHtml += createReview(results.reviews[i])
+               }
 
-                console.log(results.items)
-                deleteMarkers();
-                selectedFeatures = [];
-                results.items.items.forEach(function (point) {
-                    var loc = { lat: parseFloat(point.lat), lng: parseFloat(point.lng) };
-                    console.log(loc);
+               $('#itemInfo').html( '<div class="container-fluid">'+reviewsHtml+'</div>')
+               }
 
-                    MainControl.GoogleMapHelper.addMarker(loc, point.Name, point.id);
-                })
 
             }
-        });*/
-        alert(id);
+        });
+
     }
 
     function arrayToString(array) {

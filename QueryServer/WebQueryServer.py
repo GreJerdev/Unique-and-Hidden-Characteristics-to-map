@@ -214,13 +214,13 @@ def GetReviewSentencesById():
     result = {}
     if tools.IsInt(id):
         result = query.GetItemsWithFeatures(id)
-        print 3289
-    return result
+    return str(result)
 
 @app.route('/getreviewsentencesbyitemid', methods=['GET', 'POST'])
 def GetReviewsTextByItemId():
     id = request.args.get('id', '')
     result = {}
+    print id
     if tools.IsInt(id):
         result = query.GetReviewsTextByItemId(id)
     return str(result)

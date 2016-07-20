@@ -7,6 +7,7 @@ from connector import getEngineUrl
 import urllib2
 import ast
 import locations
+import item
 
 @app.route('/')
 def index():
