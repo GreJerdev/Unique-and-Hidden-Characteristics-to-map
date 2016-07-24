@@ -1,4 +1,3 @@
-
 var MainControl = MainControl || {}
 MainControl.GoogleMapHelper = (function () {
 
@@ -8,9 +7,9 @@ MainControl.GoogleMapHelper = (function () {
     var markers = [];
     var selectedFeatures = [];
     var searchCircle = null;
-    
+
     function mapOnClick(event) {
-        ShowItems({ lat: event.latLng.lat, lon: event.latLng.lng }, 'getitemsnearme', 'getfeaturesnearme');
+        ShowItems({lat: event.latLng.lat, lon: event.latLng.lng}, 'getitemsnearme', 'getfeaturesnearme');
         if (searchCircle != null) {
             searchCircle.setMap(null);
         }
@@ -26,17 +25,18 @@ MainControl.GoogleMapHelper = (function () {
         });
         searchCircle.addListener('click', mapOnClick)
     }
-    
+
     function initMap() {
         isMapInit = true;
 
         map = new google.maps.Map(document.getElementById('map'), {
-            center: { lat: 33.4664494, lng: -112.0655065 },
+            center: {lat: 33.4664494, lng: -112.0655065},
             zoom: 12
         });
 
         map.addListener('click', mapOnClick);
     }
+
     function addMarker(loc, text, id) {
         var infowindow = new google.maps.InfoWindow({
             content: text
@@ -61,21 +61,21 @@ MainControl.GoogleMapHelper = (function () {
         infowindows.push(infowindow);
     }
 
-    function createReview(review){
-        var reviewHtml = '<div class="row"> <div polarity="'+review.polarity+'" reviewid="'+review.id+'">';
-        for(r = 0; r <review.sentences.length; r++){
+    function createReview(review) {
+        var reviewHtml = '<div class="row well"> <div polarity="' + review.polarity + '" reviewid="' + review.id + '">';
+        for (r = 0; r < review.sentences.length; r++) {
             var colorClass = 'bg-warning'
-            if(colorClass != 0){
+            if (colorClass != 0) {
                 colorClass = review.sentences[r].polarity > 0 ? 'bg-success' : 'bg-danger';
             }
-            var sentenceHtml = '<div class="'+colorClass+'">';
-            for(j=0; j <review.sentences[r].members.length; j++){
+            var sentenceHtml = '<div class="' + colorClass + '">';
+            for (j = 0; j < review.sentences[r].members.length; j++) {
                 var member = review.sentences[r].members[j]
                 var memberHtml = ''
-                if ( member.hasOwnProperty('featureId') ) {
-                    memberHtml = '<a href="#" onclick="return '+member.featureId+';">'+member.text+'</a>'
+                if (member.hasOwnProperty('featureId')) {
+                    memberHtml = '<a href="#" onclick="return ' + member.featureId + ';">' + member.text + '</a>'
                 }
-                else{
+                else {
                     memberHtml = member.text;
                 }
                 sentenceHtml += memberHtml
@@ -83,7 +83,7 @@ MainControl.GoogleMapHelper = (function () {
             sentenceHtml += '</div>'
             reviewHtml += sentenceHtml
         }
-        reviewHtml+= '</div></div><div class="row">__</div>'
+        reviewHtml += '</div></div>'
         return reviewHtml;
     }
 
@@ -91,20 +91,20 @@ MainControl.GoogleMapHelper = (function () {
         $.ajax({
             type: "GET",
             url: 'getreviewsentencesbyitemid',
-            data: {id:id},
+            data: {id: id},
             success: function (results) {
                 var reviewsHtml = '';
                 debugger;
-                if(results.reviews.constructor === Array){
-                var i = 0;
-                for(i = 0; i < results.reviews.length; i++){
-                    reviewsHtml += createReview(results.reviews[i])
-               }
+                if (results.reviews.constructor === Array) {
+                    var i = 0;
+                    for (i = 0; i < results.reviews.length; i++) {
+                        reviewsHtml += createReview(results.reviews[i])
+                    }
 
-               $('#itemInfo').html( '<div class="container-fluid">'+reviewsHtml+'</div>')
-               }
-
-
+                    $('#itemReviews').html('<div class="container-fluid">' + reviewsHtml + '</div>');
+                    $('#infoDataMain').modal('toggle');
+                    $('#infoDataMain').modal('show');
+                }
             }
         });
 
@@ -160,7 +160,7 @@ MainControl.GoogleMapHelper = (function () {
             $.ajax({
                 type: "GET",
                 url: "getitemswithfeatures",
-                data: { items: items, features: features },
+                data: {items: items, features: features},
                 success: function (results) {
                     for (m in markers) {
                         if (results.items.indexOf(markers[m].item) > -1) {
@@ -186,7 +186,7 @@ MainControl.GoogleMapHelper = (function () {
                 deleteMarkers();
                 selectedFeatures = [];
                 results.items.items.forEach(function (point) {
-                    var loc = { lat: parseFloat(point.lat), lng: parseFloat(point.lng) };
+                    var loc = {lat: parseFloat(point.lat), lng: parseFloat(point.lng)};
                     console.log(loc);
 
                     MainControl.GoogleMapHelper.addMarker(loc, point.Name, point.id);

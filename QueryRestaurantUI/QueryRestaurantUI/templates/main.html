@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<div class="row row-max-height" style="height: 100%;">
+
+   <div class="row row-max-height" style="height: 100%;z-index:-10;">
     <div class="col-md-9" style="height: 100%;">
         <div id="map"></div>
     </div>
@@ -43,9 +44,47 @@
             </div>
         </div>
     </div>
-</div>
+       <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" id="infoDataMain">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" id="infoData">
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a data-toggle="tab" href="#itemReviews">Reviews</a>
+                    </li>
+                    <li>
+                        <a data-toggle="tab" href="#features">Features</a>
+                    </li>
+                    <li>
+                        <a data-toggle="tab" href="#similar">Similar </a>
+                    </li>
+                    <li>
+                        <a data-toggle="tab" href="#featuresCloud">Information</a>
+                    </li>
+                </ul>
+                 <div class="tab-content" style="overflow-y:scroll;height:80%;">
+            <div id="itemReviews" class="tab-pane fade in active" style="height:80%;">
+                <h3>HOME</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            </div>
+            <div id="features" class="tab-pane fade">
+                <h3>itemInfo</h3>
+                <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            </div>
+            <div id="similar" class="tab-pane fade">
+                <h3>Menu 2</h3>
+                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+            </div>
+            <div id="featuresCloud" class="tab-pane fade">
+                <h3>Menu 3</h3>
+                <p>Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+            </div>
+        </div>
+            </div>
+        </div>
+       </div>
 
-<script src="/static/scripts/mapcontorl.js">
+
+       <script src="/static/scripts/mapcontorl.js">
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?callback=MainControl.GoogleMapHelper.initMap"
         async defer>

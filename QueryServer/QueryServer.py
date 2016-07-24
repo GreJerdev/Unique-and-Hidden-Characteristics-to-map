@@ -23,11 +23,11 @@ class QueryServer:
         return itemsIds
 
     def GetFeatureByItemId(self, ItemId):
-        results = self.__featureDBProvider.GetFeatureOfItemsByIds(ItemId)
-      
+        results = self.__featureDBProvider.GetFeatureInfoByItemId(ItemId)
+       
         itemsIds = list()
         if len(results) > 0:
-            itemsIds = [row for row in results[0]]
+            itemsIds = [{'text':row[0],'id':row[1],'polarity':self.GetFeaturePolarityInItemReviews(row[1],ItemId),'tf_idf':row[2]} for row in results[0]]
         return itemsIds
         
     def GetFeature(self, properties):

@@ -64,14 +64,12 @@ def GetItems():
 def GetFeatureByItemId():
     itemId = request.args.get('itemId', '')
     try:
-        print itemId
-        responce = str(query.GetFeatureByItemId(itemId))
-        print responce
+        responce = query.GetFeatureByItemId(itemId)
     except:
         pass
         #print  sys.exc_info()
         #print "END OF ERROR"
-    return responce
+    return jsonify({'features':responce})
 
 
 @app.route("/getsimilaritems",methods=['GET'])
