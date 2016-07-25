@@ -11,7 +11,7 @@ import json
 class QueryServer:
 
     def __init__(self,config):
-
+            
         self.__featureDBProvider = FactoryFeatureDataManager.GetFeatureDBProvider(config)
         self.__itemsDBProvider = FactorySoureDataManager.GetSourceDataManager(config)
 
@@ -44,15 +44,28 @@ class QueryServer:
        
     def GetSimilarItems(self, item):
         results = self.__featureDBProvider.GetItemsFeaturesByItemsIds('')
+        similarItems = dict()
         distanceDict = dict()
+        d = dict()
+        d[item] = results[item]
+        itemFeaturesIds = d[item].keys()
         for i in results.keys():
-            if(not i == int(item)):
-                d = {}
-                d[i] = results[i]
-                d[item] = results[item]
-                distance = CreateCompareTableBetweenItems(d)
-                distanceDict[i] = CalculateDistance(distance[i],distance[item])
-        return distanceDict
+            numOfItems = len(results[i].keys())
+            if numOfItems > 0:
+                numOfFeaturesNotInItem = len(set(results[i].keys()) - set(itemFeaturesIds))
+                percent = 100 - (100*numOfFeaturesNotInItem)/ numOfItems 
+                if percent > 7:
+                    print percent
+                    d[i] = results[i]
+                
+        distance = CreateCompareTableBetweenItems(d)
+        for i in d.keys():
+            similarItems[i] = dict()
+            distanceDict[i] = CalculateDistance(distance[i],distance[item])	
+            similarItems[i]['distance'] = distanceDict[i]
+            similarItems[i]['features'] = distance[i]
+        print len(similarItems)
+        return similarItems
 
     def GetItemsIdByFeatureList(self, featureList):
         featuresid = ','.join([str(feature) for feature in featureList])

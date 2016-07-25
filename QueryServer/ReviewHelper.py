@@ -87,6 +87,7 @@ class ReviewHelper(object):
         featuresDict = self.__GetListOfSentenceFeatures( sentenceId, sentenceList)
         sentenceText = sentenceList[0][2]
         sentence.SetId(sentenceId)
+        sentence.SetFeatures(featuresDict if len(featuresDict) == 1 and "null" in featuresDict.keys() else {})
         sentence.SetPolarity(sentenceList[0][7])
         if len(featuresDict) > 0 :
             for feature in featuresDict.keys():

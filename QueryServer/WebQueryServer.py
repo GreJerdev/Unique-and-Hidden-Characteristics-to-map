@@ -62,19 +62,19 @@ def GetItems():
 
 @app.route("/getfeaturebyitemid",methods=["GET"])
 def GetFeatureByItemId():
-    itemId = request.args.get('itemId', '')
+    itemId = request.args.get('id', '')
     try:
         responce = query.GetFeatureByItemId(itemId)
     except:
         pass
         #print  sys.exc_info()
         #print "END OF ERROR"
-    return jsonify({'features':responce})
+    return str(responce)
 
 
 @app.route("/getsimilaritems",methods=['GET'])
 def GetSimilarItems():
-    itemid = request.args.get('item', '')
+    itemid = request.args.get('id', '')
     try:
         itemid_int = int(itemid)
         responce = str(query.GetSimilarItems(itemid_int))

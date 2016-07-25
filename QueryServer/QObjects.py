@@ -52,6 +52,9 @@ class Sentence(dict):
     def GetMembers(self):
         return self['members'] 
 
+    def SetFeatures(self, features):
+        self['features'] = features
+    
     def AddMember(self, member):
         self['members'].append(member)
         
