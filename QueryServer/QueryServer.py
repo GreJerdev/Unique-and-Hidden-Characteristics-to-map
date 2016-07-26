@@ -43,6 +43,7 @@ class QueryServer:
 
        
     def GetSimilarItems(self, item):
+        percentOfSimilarity = 15
         results = self.__featureDBProvider.GetItemsFeaturesByItemsIds('')
         similarItems = dict()
         distanceDict = dict()
@@ -54,11 +55,15 @@ class QueryServer:
             if numOfItems > 0:
                 numOfFeaturesNotInItem = len(set(results[i].keys()) - set(itemFeaturesIds))
                 percent = 100 - (100*numOfFeaturesNotInItem)/ numOfItems 
-                if percent > 7:
-                    print percent
+                if percent >= percentOfSimilarity:
                     d[i] = results[i]
                 
         distance = CreateCompareTableBetweenItems(d)
+        
+        for itm in distance.keys():
+            for featureId in distance[itm]:
+                if distance[itm][featureId]['tf_idf'] > 0:
+                    distance[itm][featureId]['polarity'] = self.GetFeaturePolarityInItemReviews(featureId,itm)
         for i in d.keys():
             similarItems[i] = dict()
             distanceDict[i] = CalculateDistance(distance[i],distance[item])	

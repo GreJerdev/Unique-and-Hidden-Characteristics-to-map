@@ -48,7 +48,8 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
         if len(queryResult) > 0:
             itemsIds = [row for row in queryResult[0]]
             for item in itemsIds:
-                result[item[0]] =  { int(f.split('|')[0]): float(f.split('|')[1]) for f in item[1].split(',')}
+                result[item[0]] =  { int(f.split('|')[0]):  {'tf_idf':float(f.split('|')[1]),'text':f.split('|')[2],'polarity':0}for f in item[1].split(',')}
+               
         return result
 
     def GetReviewsSentencesByFeatureIds(self, featuresIdsList):
