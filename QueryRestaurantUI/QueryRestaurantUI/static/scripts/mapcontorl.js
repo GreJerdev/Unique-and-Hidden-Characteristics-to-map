@@ -61,13 +61,29 @@ MainControl.GoogleMapHelper = (function () {
         infowindows.push(infowindow);
     }
 
-    function getColorClassByPolarity(polarity) {
-        var colorClass = 'bg-warning'
-        if (colorClass != 0) {
-            colorClass = polarity > 0 ? 'bg-success' : 'bg-danger';
+    function getClassByPolarity(polarity) {
+        var polarityClass ='neutral';
+        if (polarity > 0){
+            polarityClass = 'positive'
+        }else{
+            polarityClass = 'negative'
         }
+        return polarityClass
+    }
+
+    function getColorClassByPolarity(polarity) {
+        var colorClass ='nautral ';
+        if (polarity == 0) {
+            colorClass = 'bg-warning';
+        }else if (polarity > 0){
+            colorClass = 'bg-success'
+        }else{
+            colorClass = 'bg-danger'
+        }
+
         return colorClass
     }
+
     function getSizeByTfIdf(tfIdf) {
         var floatTfIdf = parseFloat(tfIdf);
         var size = 6;
@@ -85,27 +101,30 @@ MainControl.GoogleMapHelper = (function () {
         return size;
     }
 
+    function createSenteces(sentence){
+        var sentenceHtml = '<div class="sentence ' + getColorClassByPolarity(sentence.polarity) + ' '+getClassByPolarity(sentence.polarity)+'">';
+        for (j = 0; j < sentence.members.length; j++) {
+            var member = sentence.members[j]
+            var memberHtml = ''
+            if (member.hasOwnProperty('featureId')) {
+                memberHtml = '<a href="#" onclick="return ' + member.featureId + ';">' + member.text + '</a>'
+            }
+            else {
+                memberHtml = member.text;
+            }
+            sentenceHtml += memberHtml
+        }
+        sentenceHtml += '</div>'
+        return sentenceHtml;
+    }
 
     function createReview(review) {
-        var reviewHtml = '<div class="row well"> <div polarity="' + review.polarity + '" reviewid="' + review.id + '">';
+        var reviewHtml = '<div class="row well '+getClassByPolarity(review.polarity)+'" reviewid="' + review.id + '">';
         for (r = 0; r < review.sentences.length; r++) {
-
-            var sentenceHtml = '<div class="' + getColorClassByPolarity(review.sentences[r].polarity) + '">';
-            for (j = 0; j < review.sentences[r].members.length; j++) {
-                var member = review.sentences[r].members[j]
-                var memberHtml = ''
-                if (member.hasOwnProperty('featureId')) {
-                    memberHtml = '<a href="#" onclick="return ' + member.featureId + ';">' + member.text + '</a>'
-                }
-                else {
-                    memberHtml = member.text;
-                }
-                sentenceHtml += memberHtml
-            }
-            sentenceHtml += '</div>'
-            reviewHtml += sentenceHtml
+            reviewSentences = review.sentences[r];
+            reviewHtml += createSenteces(reviewSentences);
         }
-        reviewHtml += '</div></div>'
+        reviewHtml += '</div>'
         return reviewHtml;
     }
 
@@ -114,7 +133,7 @@ MainControl.GoogleMapHelper = (function () {
         for (reviews_index = 0; reviews_index < reviews.length; reviews_index++) {
             if (reviews[reviews_index].hasOwnProperty('features') == true){
                 if (reviews[reviews_index]['features'].hasOwnProperty(fId) == true){
-                    reviewsHtml += '<div class="review" feature="'+fId+'" style="display:none;" polarity="' + reviews[reviews_index].polarity + '" >'+createReview(reviews[reviews_index]);+'</div>'
+                    reviewsHtml += createReview(reviews[reviews_index]);
                 }
             }
          }
@@ -122,38 +141,121 @@ MainControl.GoogleMapHelper = (function () {
         return reviewsHtml;
     }
 
+    function  getFeatureSentences(featureId, reviews) {
+        var sentencesHtml ='';
+        for (reviews_index = 0; reviews_index < reviews.length; reviews_index++) {
+            if (reviews[reviews_index].hasOwnProperty('features') == true){
+                if (reviews[reviews_index]['features'].hasOwnProperty(featureId) == true){
+                    var sentences = reviews[reviews_index].sentences;
+                    for(sentencesIndex = 0; sentencesIndex < sentences.length;sentencesIndex++){
+                        if (sentences[sentencesIndex].features.hasOwnProperty(reviews[reviews_index]['features'][featureId]) == true){
+                            sentencesHtml+=createSenteces(sentences[sentencesIndex]);
+                        }
+                    }
+                }
+            }
+         }
+        return sentencesHtml;
+    }
+
+    function countSentences(featureId, reviews, polarity){
+        var count = 0;
+        for (reviews_index = 0; reviews_index < reviews.length; reviews_index++) {
+            if (reviews[reviews_index].hasOwnProperty('features') == true){
+                if (reviews[reviews_index]['features'].hasOwnProperty(featureId) == true){
+                    var sentences = reviews[reviews_index].sentences;
+                    for(sentencesIndex = 0; sentencesIndex < sentences.length;sentencesIndex++){
+                        if (sentences[sentencesIndex].features.hasOwnProperty(reviews[reviews_index]['features'][featureId]) == true){
+                            if(polarity=='all'){
+                                 count++
+                            }
+                            else if (sentences[sentencesIndex].polarity > 0 && polarity=='pos'){
+                                count++
+                            }else if  (sentences[sentencesIndex].polarity < 0 && polarity=='neg') {
+                                count++
+                            }
+                        }
+                    }
+                }
+            }
+         }
+        return count;
+    }
+
     function createFeatures(itemId,features,reviews){
-        var featuresHtml = '<table class="table"><thead><tr><th>Feature</th><th>Tf-Idf</th><th>Polarety</th><th>Pos Sentemens</th><th>Neg Sentemens</th><th>Nau Sentemens</th></tr></thead><tbody>';
+        var featuresHtml = '<table class="table"><thead><tr><th>Feature</th><th>Tf-Idf</th><th>Polarety</th><th>All Sentemens</th><th>Pos Sentemens</th><th>Neg Sentemens</th></tr></thead><tbody>';
         for (i = 0; i < features.length; i++) {
             var coloreClass = getColorClassByPolarity(features[i].polarity);
             var size = getSizeByTfIdf(features[i].tf_idf);
             //var listOfSentences = getFeatureSentences(features[i].id, reviews)
             var listOfReviews = getFeatureReivews(features[i].id, reviews)
+            var listOfSentences = getFeatureSentences(features[i].id, reviews)
             //x.hasOwnProperty('key')
-            featuresHtml += '<tr class="coloreClass">'
+            featuresHtml += '<tr class="'+coloreClass+'">'
             featuresHtml += '<td>'+features[i].text+'</td>'
             featuresHtml += '<td>'+features[i].tf_idf+'</td>'
             featuresHtml += '<td>'+features[i].polarity+'</td>'
-            featuresHtml += '<td>0</td>'
-            featuresHtml += '<td>0</td>'
-            featuresHtml += '<td>0</td>'
+            featuresHtml += '<td>'+countSentences(features[i].id, reviews,"all")+'</td>'
+            featuresHtml += '<td>'+countSentences(features[i].id, reviews,"pos")+'</td>'
+            featuresHtml += '<td>'+countSentences(features[i].id, reviews,"neg")+'</td>'
             featuresHtml += '</tr>'
             featuresHtml += '<tr class="tableButtons">'
-            featuresHtml += '<td><div class="btn-group btn-group-xs" role="group" ><button type="button" class="btn btn-default">All Reviews</button></div></td>'
-            featuresHtml += '<td><div class="btn-group btn-group-xs" role="group" ><button type="button" class="btn btn-default">Pos Reviews</button></div></td>'
-            featuresHtml += '<td><div class="btn-group btn-group-xs" role="group" ><button type="button" class="btn btn-default">Neg Reviews</button></div></td>'
-            featuresHtml += '<td><div class="btn-group btn-group-xs" role="group" ><button type="button" class="btn btn-default">All Sentences</button></div></td>'
-            featuresHtml += '<td><div class="btn-group btn-group-xs" role="group" ><button type="button" class="btn btn-default">Pos Sentences</button></div></td>'
-            featuresHtml += '<td><div class="btn-group btn-group-xs" role="group" ><button type="button" class="btn btn-default">Neg Sentences</button></div></td>'
+            featuresHtml += '<td><div class="btn-group btn-group-xs featureInText" id="'+features[i].id+'" role="group" onclick="MainControl.GoogleMapHelper.showReviews('+features[i].id+',\'all\')"><button type="button" class="btn btn-default">All Reviews</button></div></td>'
+            featuresHtml += '<td><div class="btn-group btn-group-xs featureInText" id="'+features[i].id+'" role="group" onclick="MainControl.GoogleMapHelper.showReviews('+features[i].id+',\'pos\')"><button type="button" class="btn btn-default">Pos Reviews</button></div></td>'
+            featuresHtml += '<td><div class="btn-group btn-group-xs featureInText" id="'+features[i].id+'" role="group" onclick="MainControl.GoogleMapHelper.showReviews('+features[i].id+',\'neg\')"><button type="button" class="btn btn-default">Neg Reviews</button></div></td>'
+            featuresHtml += '<td><div class="btn-group btn-group-xs featureInText" id="'+features[i].id+'" role="group" onclick="MainControl.GoogleMapHelper.showSentences('+features[i].id+',\'all\')"><button type="button" class="btn btn-default">All Sentences</button></div></td>'
+            featuresHtml += '<td><div class="btn-group btn-group-xs featureInText" id="'+features[i].id+'" role="group" onclick="MainControl.GoogleMapHelper.showSentences('+features[i].id+',\'pos\')"><button type="button" class="btn btn-default">Pos Sentences</button></div></td>'
+            featuresHtml += '<td><div class="btn-group btn-group-xs featureInText" id="'+features[i].id+'" role="group" onclick="MainControl.GoogleMapHelper.showSentences('+features[i].id+',\'neg\')"><button type="button" class="btn btn-default">Neg Sentences</button></div></td>'
             featuresHtml += '</tr>'
 
-            featuresHtml += '<tr id="'+features[i].id+'"><td colspan="6">'+listOfReviews+'</td></tr>'
-
-
-        }
+            featuresHtml += '<tr id="reviews'+features[i].id+'" class="reviews"><td colspan="6">'+listOfReviews+'</td></tr>'
+            featuresHtml += '<tr id="sentences'+features[i].id+'" class="sentences"><td colspan="6">'+listOfSentences+'</td></tr>'
+     }
         featuresHtml+= '</tbody></table>'
         return featuresHtml;
     }
+
+    function showReviews(featureId,polarity){
+        hideAll();
+        var selector = '#reviews'+featureId
+        $(selector).show();
+         var hideselector = selector + '> td > div'
+        $(hideselector).hide();
+        if (polarity == 'all'){
+            $(hideselector).show();
+        }else if(polarity == 'pos'){
+            var polarityselector = selector + '> td > div.positive'
+            $(polarityselector).show();
+        }else if(polarity == 'neg'){
+            var polarityselector = selector + '> td > div.negative'
+            $(polarityselector).show();
+        }
+
+    }
+
+    function showSentences(featureId,polarity){
+        hideAll();
+        var selector = '#sentences'+featureId
+        $(selector).show();
+
+        var hideselector = selector + '> td > div'
+        $(hideselector).hide();
+        if (polarity == 'all'){
+            $(hideselector).show();
+        }else if(polarity == 'pos'){
+            var polarityselector = selector + '> td > div.positive'
+            $(polarityselector).show();
+        }else if(polarity == 'neg'){
+            var polarityselector = selector + '> td > div.negative'
+            $(polarityselector).show();
+        }
+    }
+
+    function hideAll(){
+        $('tr.sentences').hide();
+        $('tr.reviews').hide();
+    }
+
     function createSimilarItems(itemId,similarItems){
 
         var similarHtml = '';
@@ -180,9 +282,10 @@ MainControl.GoogleMapHelper = (function () {
                     $('#generalInfo').html('<div class="container-fluid">' + reviewsHtml + '</div>');
                     $('#features').html('<div class="container-fluid">' + createFeatures(id,results.features,results.reviews) + '</div>');
                     //$('#similar').html('<div class="container-fluid">' + createSimilarItems(id,results.similarItems) + '</div>');
-
+                    hideAll();
                     $('#infoDataMain').modal('toggle');
                     $('#infoDataMain').modal('show');
+
                 }
             }
         });
@@ -316,5 +419,7 @@ MainControl.GoogleMapHelper = (function () {
         isInit: isInit,
         featureClick: featureClick,
         ShowAll: showAll,
+        showReviews:showReviews,
+        showSentences:showSentences,
     };
 })();
