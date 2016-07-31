@@ -80,6 +80,13 @@ class ReviewHelper(object):
     def __GetListOfSentenceFeatures(self, sentenceId, listOfSentences):     
         return dict([(sentence[5],sentence[3])  for sentence in  list( filter((lambda s: s[0] == sentenceId), listOfSentences))])
 
+    def __GetListOfReviewFeatures(self, reviewId, listOfSentences):     
+        featureDict = dict([(sentence[3],sentence[5])  for sentence in  list( filter((lambda s: s[1] == reviewId), listOfSentences))])
+        if None in featureDict.keys():
+            del featureDict[None]
+        return featureDict
+
+    
     def __GetSentenceObjects(self, sentenceId, listOfSentences):
        
         sentence = Sentence()
@@ -87,7 +94,7 @@ class ReviewHelper(object):
         featuresDict = self.__GetListOfSentenceFeatures( sentenceId, sentenceList)
         sentenceText = sentenceList[0][2]
         sentence.SetId(sentenceId)
-        sentence.SetFeatures(featuresDict if len(featuresDict) == 1 and "null" in featuresDict.keys() else {})
+        sentence.SetFeatures(featuresDict if len(featuresDict) >= 1 and None not in featuresDict.keys() else {})
         sentence.SetPolarity(sentenceList[0][7])
         if len(featuresDict) > 0 :
             for feature in featuresDict.keys():
@@ -113,7 +120,7 @@ class ReviewHelper(object):
         review = Review()
         listOfReviewSentencesId = self.__GetListOfReviewSentecesId(reviewId, listOfSentences)
         review.SetId(reviewId)
-       
+        review.SetFeatures(self.__GetListOfReviewFeatures(reviewId, listOfSentences))
         for sentencesId in listOfReviewSentencesId:
             review.AddSentence(self.__GetSentenceObjects(sentencesId, listOfSentences))
        

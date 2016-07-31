@@ -61,14 +61,36 @@ MainControl.GoogleMapHelper = (function () {
         infowindows.push(infowindow);
     }
 
+    function getColorClassByPolarity(polarity) {
+        var colorClass = 'bg-warning'
+        if (colorClass != 0) {
+            colorClass = polarity > 0 ? 'bg-success' : 'bg-danger';
+        }
+        return colorClass
+    }
+    function getSizeByTfIdf(tfIdf) {
+        var floatTfIdf = parseFloat(tfIdf);
+        var size = 6;
+        if (floatTfIdf > 0 && floatTfIdf <= 0.2){
+            size = 5;
+        }else if (floatTfIdf > 0.2 && floatTfIdf <= 0.4){
+            size = 4;
+        }else if (floatTfIdf > 0.4 && floatTfIdf <= 0.6){
+            size = 3;
+        }else if (floatTfIdf > 0.6 && floatTfIdf <= 0.8){
+            size = 2;
+        }else if (floatTfIdf > 0.8 && floatTfIdf <= 1){
+            size = 1;
+        }
+        return size;
+    }
+
+
     function createReview(review) {
         var reviewHtml = '<div class="row well"> <div polarity="' + review.polarity + '" reviewid="' + review.id + '">';
         for (r = 0; r < review.sentences.length; r++) {
-            var colorClass = 'bg-warning'
-            if (colorClass != 0) {
-                colorClass = review.sentences[r].polarity > 0 ? 'bg-success' : 'bg-danger';
-            }
-            var sentenceHtml = '<div class="' + colorClass + '">';
+
+            var sentenceHtml = '<div class="' + getColorClassByPolarity(review.sentences[r].polarity) + '">';
             for (j = 0; j < review.sentences[r].members.length; j++) {
                 var member = review.sentences[r].members[j]
                 var memberHtml = ''
@@ -87,21 +109,78 @@ MainControl.GoogleMapHelper = (function () {
         return reviewHtml;
     }
 
+    function getFeatureReivews(fId, reviews){
+        var reviewsHtml =  '';
+        for (reviews_index = 0; reviews_index < reviews.length; reviews_index++) {
+            if (reviews[reviews_index].hasOwnProperty('features') == true){
+                if (reviews[reviews_index]['features'].hasOwnProperty(fId) == true){
+                    reviewsHtml += '<div class="review" feature="'+fId+'" style="display:none;" polarity="' + reviews[reviews_index].polarity + '" >'+createReview(reviews[reviews_index]);+'</div>'
+                }
+            }
+         }
+
+        return reviewsHtml;
+    }
+
+    function createFeatures(itemId,features,reviews){
+        var featuresHtml = '<table class="table"><thead><tr><th>Feature</th><th>Tf-Idf</th><th>Polarety</th><th>Pos Sentemens</th><th>Neg Sentemens</th><th>Nau Sentemens</th></tr></thead><tbody>';
+        for (i = 0; i < features.length; i++) {
+            var coloreClass = getColorClassByPolarity(features[i].polarity);
+            var size = getSizeByTfIdf(features[i].tf_idf);
+            //var listOfSentences = getFeatureSentences(features[i].id, reviews)
+            var listOfReviews = getFeatureReivews(features[i].id, reviews)
+            //x.hasOwnProperty('key')
+            featuresHtml += '<tr class="coloreClass">'
+            featuresHtml += '<td>'+features[i].text+'</td>'
+            featuresHtml += '<td>'+features[i].tf_idf+'</td>'
+            featuresHtml += '<td>'+features[i].polarity+'</td>'
+            featuresHtml += '<td>0</td>'
+            featuresHtml += '<td>0</td>'
+            featuresHtml += '<td>0</td>'
+            featuresHtml += '</tr>'
+            featuresHtml += '<tr class="tableButtons">'
+            featuresHtml += '<td><div class="btn-group btn-group-xs" role="group" ><button type="button" class="btn btn-default">All Reviews</button></div></td>'
+            featuresHtml += '<td><div class="btn-group btn-group-xs" role="group" ><button type="button" class="btn btn-default">Pos Reviews</button></div></td>'
+            featuresHtml += '<td><div class="btn-group btn-group-xs" role="group" ><button type="button" class="btn btn-default">Neg Reviews</button></div></td>'
+            featuresHtml += '<td><div class="btn-group btn-group-xs" role="group" ><button type="button" class="btn btn-default">All Sentences</button></div></td>'
+            featuresHtml += '<td><div class="btn-group btn-group-xs" role="group" ><button type="button" class="btn btn-default">Pos Sentences</button></div></td>'
+            featuresHtml += '<td><div class="btn-group btn-group-xs" role="group" ><button type="button" class="btn btn-default">Neg Sentences</button></div></td>'
+            featuresHtml += '</tr>'
+
+            featuresHtml += '<tr id="'+features[i].id+'"><td colspan="6">'+listOfReviews+'</td></tr>'
+
+
+        }
+        featuresHtml+= '</tbody></table>'
+        return featuresHtml;
+    }
+    function createSimilarItems(itemId,similarItems){
+
+        var similarHtml = '';
+        featureIds = Object.keys(similarItems[itemId].features);
+         for (i = 0; i < featureIds.length; i++){
+             var index = featureIds[i]
+             similarHtml +=  similarItems[itemId].features[index]["text"] + ' ';
+         }
+        return similarHtml
+    }
     function showItemDetails(id) {
         $.ajax({
             type: "GET",
-            url: 'getreviewsentencesbyitemid',
+            url: 'getitem',
             data: {id: id},
             success: function (results) {
                 var reviewsHtml = '';
-                debugger;
                 if (results.reviews.constructor === Array) {
                     var i = 0;
                     for (i = 0; i < results.reviews.length; i++) {
                         reviewsHtml += createReview(results.reviews[i])
                     }
-
                     $('#itemReviews').html('<div class="container-fluid">' + reviewsHtml + '</div>');
+                    $('#generalInfo').html('<div class="container-fluid">' + reviewsHtml + '</div>');
+                    $('#features').html('<div class="container-fluid">' + createFeatures(id,results.features,results.reviews) + '</div>');
+                    //$('#similar').html('<div class="container-fluid">' + createSimilarItems(id,results.similarItems) + '</div>');
+
                     $('#infoDataMain').modal('toggle');
                     $('#infoDataMain').modal('show');
                 }

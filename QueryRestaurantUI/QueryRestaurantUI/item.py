@@ -51,9 +51,10 @@ def GetItem():
         items = ast.literal_eval(itemsInStrArr)
         url = getEngineUrl() + "/getfeaturebyitemid" + args
         features = ast.literal_eval(urllib2.urlopen(url).read())
-        url = getEngineUrl() + "/getsimilaritems" + args
-        similaritems  = ast.literal_eval(urllib2.urlopen(url).read())
-        result['reviews'] = items
+        #url = getEngineUrl() + "/getsimilaritems" + args
+        similaritems = {}
+        #similaritems  = ast.literal_eval(urllib2.urlopen(url).read())
+        result['reviews'] = items['reviews']
         result['features'] = features
         result['similarItems'] = similaritems
     except:

@@ -18,3 +18,8 @@ flex-direction: column;
 
   #map {
         height: 100%;}
+
+
+ .feature a:hover{
+  font-size:40px;
+}

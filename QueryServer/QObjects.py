@@ -64,10 +64,15 @@ class Review(dict):
     def __init__(self):
         self.SetPolarity(0)
         self.SetId(0)
-        self['sentences'] = [] 
-
+        self['sentences'] = []
+        self['polarity'] = 0
+        self['features'] = {}
+        
     def SetPolarity(self, polarity):
         self['polarity'] = polarity
+
+    def SetFeatures(self, features):
+        self['features'] = features    
 
     def SetId(self,text):
         self['id'] = text
