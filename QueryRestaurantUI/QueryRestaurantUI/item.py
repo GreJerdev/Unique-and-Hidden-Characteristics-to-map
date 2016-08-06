@@ -8,8 +8,18 @@ from connector import getEngineUrl
 import urllib2
 import ast
 
-print getEngineUrl()
-             
+@app.route('/allpoints')
+def GetAllItems():
+    try:
+        url = getEngineUrl() + "/getallitems"
+
+        itemsInStrArr = urllib2.urlopen(url).read()
+        items = ast.literal_eval(itemsInStrArr)
+    except:
+        e = sys.exc_info()[0]
+        print e
+    return jsonify({'items': items})
+
 @app.route('/getreviewsentencesbyid', methods=['GET', 'POST'])
 def GetReviewSentencesById():
     try:

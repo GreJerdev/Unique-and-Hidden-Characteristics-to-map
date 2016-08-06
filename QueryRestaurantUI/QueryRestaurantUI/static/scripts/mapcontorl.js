@@ -52,10 +52,9 @@ MainControl.GoogleMapHelper = (function () {
         marker.addListener('click', function () {
             closeInfoWindow();
             infowindow.open(map, marker);
-            marker.setIcon('http://maps.google.com/mapfiles/kml/paddle/ylw-circle.png')
+            //marker.setIcon('http://maps.google.com/mapfiles/kml/paddle/ylw-circle.png')
             showItemDetails(id);
-            //$('#itemInfo').html(text);
-            //$('#itemInfo').show();
+
         });
         markers.push(marker);
         infowindows.push(infowindow);
@@ -316,8 +315,20 @@ MainControl.GoogleMapHelper = (function () {
 
     function clearMarkers() {
         setMapOnAll(null);
+
     }
 
+    function cleanMap() {
+        clearsearchCircle();
+        clearMarkers();
+    }
+
+    function clearsearchCircle(){
+        if (searchCircle != null) {
+            searchCircle.setMap(null);
+        }
+        searchCircle = null;
+    }
     function deleteMarkers() {
         clearMarkers();
         markers = [];
@@ -393,11 +404,9 @@ MainControl.GoogleMapHelper = (function () {
     }
 
     function showAll() {
-        ShowItems({}, "allpoints", "allfeatures")
-        if (searchCircle != null) {
-            searchCircle.setMap(null);
-        }
-        searchCircle = null;
+        clearsearchCircle();
+        ShowItems({}, "allpoints", "allfeatures");
+
     }
 
     function featureClick(id) {
@@ -421,5 +430,6 @@ MainControl.GoogleMapHelper = (function () {
         ShowAll: showAll,
         showReviews:showReviews,
         showSentences:showSentences,
+        cleanMap:cleanMap
     };
 })();
