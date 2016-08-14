@@ -31,7 +31,6 @@ def GetFeatures():
     try:
         float(lat)
         float(lon)
-        print "hellow Irina"
     except ValueError:
         return '[]'
     p.lat = lat
@@ -39,6 +38,16 @@ def GetFeatures():
     responce = str(query.GetFeature(p))
     return  responce
 
+@app.route("/getfeaturesbyitemsid",methods=['GET'])
+def GetFeatureByItemsId():
+    itemsStr = request.args.get('items', '')
+    itemsArr = itemsStr.split(',')    
+        
+    features = query.GetFeatureByItemsId(itemsArr)
+    responce = str(features)
+    return  responce
+
+    
 @app.route("/getitems",methods=['GET'])
 def GetItems():
     p = type('point', (object,), {}) 
@@ -88,8 +97,9 @@ def GetSimilarItems():
 def GetItemsIdByFeatureList( ):
     featureList = request.args.get('featurelist', '')
     try:
-        itemid_int = int(itemid)
-        responce = str(query.GetItemsIdByFeatureList(featureList))
+        featureIdArr = featureList.split(',')
+        print featureIdArr
+        responce = str(query.GetItemsIdByFeatureList(featureIdArr))
     except:
         pass
         #print  sys.exc_info()
@@ -193,13 +203,7 @@ def getItemsWithFeatures():
         features = featuresStr.strip(',').split(',')
         items = [i for i in items if len(i) > 0  ]
         features = [f for f in features if len(f) > 0  ]
-        print '--features--'
-        print features
-        print '--items--'
-        print items
         result = query.GetItemsWithFeatures(items,features)
-        print 'result'
-        print result
         responce = str(result)
     except:
         e = sys.exc_info()[0]
@@ -222,6 +226,15 @@ def GetReviewsTextByItemId():
     if tools.IsInt(id):
         result = query.GetReviewsTextByItemId(id)
     return str(result)
+
+@app.route('/searchitemsbyfeatures', methods=['GET'])
+def SearchItemsByFeatures():
+    featuresStr = request.args.get('features', '')
+    features = featuresStr.strip(',').split(',')
+    result = query.SearchItemsByFeatures(features)
+    return str(result)
+
+
         
 if __name__ == "__main__":
     configXml = GetConfiguraton(None)

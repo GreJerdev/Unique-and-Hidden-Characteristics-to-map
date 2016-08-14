@@ -29,7 +29,20 @@ class QueryServer:
         if len(results) > 0:
             itemsIds = [{'text':row[0],'id':row[1],'polarity':self.GetFeaturePolarityInItemReviews(row[1],ItemId),'tf_idf':row[2]} for row in results[0]]
         return itemsIds
-        
+
+    def GetItemsFeaturesByItemsIds(self,ItemIds):
+        itemsids  = ','.join([str(itemid) for itemid in itemsIdList])
+        results = self.__featureDBProvider.GetItemsFeaturesByItemsIds(itemsids)
+        results = CreateCompareTableBetweenItems( results)
+
+    def GetFeatureByItemsId(self, itemIds):
+        idsList = str(','.join(itemIds))
+        results = self.__featureDBProvider.GetFeatureOfItemsByIds(idsList)
+        itemsIds = list()
+        if len(results) > 0:
+            itemsIds = [row for row in results[0]]
+        return itemsIds
+       
     def GetFeature(self, properties):
         items = self.GetItems(properties)
         itemIds = [str(itemId['id']) for itemId in items]
@@ -38,10 +51,21 @@ class QueryServer:
         itemsIds = list()
         if len(results) > 0:
             itemsIds = [row for row in results[0]]
-        print len(itemsIds)
         return itemsIds
 
-       
+    def SearchItemsByFeatures(self, listOfFeatures):
+        itemsSearchResult = self.GetItemsIdByFeatureList(listOfFeatures)
+        itemIds = [str(item[0]) for item in itemsSearchResult]
+        idsList = str(','.join(itemIds))
+        results = self.__featureDBProvider.GetFeatureOfItemsByIds(idsList)
+        features = list()
+        if len(results) > 0:
+            features = [row for row in results[0] if row[1] in listOfFeatures or str(row[1]) in listOfFeatures]
+        result = dict()
+        result['items'] = [item  for item in  self.GetAllItems() if str(item['id']) in  itemIds]
+        result['features'] = features
+        return result
+
     def GetSimilarItems(self, item):
         percentOfSimilarity = 15
         results = self.__featureDBProvider.GetItemsFeaturesByItemsIds('')
@@ -196,5 +220,5 @@ if __name__ == '__main__':
     #    for r in  server.GetReviewsTextByFeatureIds([133,131,132,130,141,1,2,3,4,1,54,34,65,34,234,654,34,7,6,87,80,87,67,655,887,766,996,455]):
     #        f.write(r)
 
-    
+    print server.SearchItemsByFeatures([1,2,3,4,5,234,433,1001])
   

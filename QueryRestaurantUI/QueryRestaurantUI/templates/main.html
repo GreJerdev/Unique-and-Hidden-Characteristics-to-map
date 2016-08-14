@@ -2,7 +2,7 @@
 {% block body %}
 
 
-   <div class="row row-max-height" style="height: 100%;z-index:-10;">
+<div class="row row-max-height" style="height: 100%;z-index:-10;">
     <div class="col-md-9" style="height: 100%;">
         <div id="map"></div>
     </div>
@@ -41,7 +41,7 @@
             </div>
         </div>
     </div>
-       <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" id="infoDataMain">
+    <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" id="infoDataMain">
         <div class="modal-dialog modal-lg">
             <div class="modal-content" id="infoData">
                 <ul class="nav nav-tabs">
@@ -59,34 +59,47 @@
                     </li>
 
                 </ul>
-                 <div class="tab-content" style="overflow-y:scroll;height:80%;">
-                      <div id="generalInfo" class="tab-pane fade in active">
-                <h3>Information</h3>
-                <p>Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
-                      </div>
-            <div id="itemReviews" class="tab-pane fade" style="height:80%;">
-            </div>
-            <div id="features" class="tab-pane fade">
-                <h3>itemInfo</h3>
-                <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-            </div>
-            <div id="similar" class="tab-pane fade">
-                <h3>Menu 2</h3>
-                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
-            </div>
+                <div class="tab-content" style="overflow-y:scroll;height:80%;">
+                    <div id="generalInfo" class="tab-pane fade in active">
+                        <h3>Information</h3>
+                        <p>Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+                    </div>
+                    <div id="itemReviews" class="tab-pane fade" style="height:80%;">
+                    </div>
+                    <div id="features" class="tab-pane fade">
+                        <h3>itemInfo</h3>
+                        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    </div>
+                    <div id="similar" class="tab-pane fade">
+                        <h3>Menu 2</h3>
+                        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+                    </div>
 
+                </div>
+            </div>
         </div>
-            </div>
-        </div>
-       </div>
+    </div>
+
+    <script src="/static/scripts/htmlGenerator.js"></script>
+    <script src="/static/scripts/featureHelper.js"> </script>
+    <script src="/static/scripts/mapcontorl.js"></script>
 
 
-       <script src="/static/scripts/mapcontorl.js">
-</script>
-<script src="https://maps.googleapis.com/maps/api/js?callback=MainControl.GoogleMapHelper.initMap"
-        async defer>
 
-</script>
+    <script>
+        function setFeatures(featuresArray) {
+            $("#featureSearchList").html('').select2({data: featuresArray});
+        }
+
+        $(function () {
+            var featuresList = FeatureHelper.featureManager.getAllFeatures(setFeatures);}) ;
 
 
-{% endblock %}
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?callback=MainControl.GoogleMapHelper.initMap"
+            async defer>
+
+    </script>
+
+
+    {% endblock %}
