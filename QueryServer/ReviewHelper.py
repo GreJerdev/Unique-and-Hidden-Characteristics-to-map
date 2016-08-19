@@ -14,12 +14,19 @@ class ReviewHelper(object):
         
         return self.__featureProvider.GetReviewsSentencesByFeatureIds(featureidsList)[0]
 
-    def GetReviewsTextByItemIdAndFeatureIds(self,itemId, featureIdsList, polarity = Polarity.ALL):
+    def GetReviewsTextByFeatureId(self, featureId):
         #1.get all reviews sentences
-        listOfSentences = self.__featureProvider.GetReviewsSentencesByItemsAndFeatureIds(itemId,featureIdsList)
-        #2.get review sentences and mark features if exists
-        #3.marge review's senteces to one text block
-        return self.MergeToReview(listOfSentences[0], featureIdsList)
+        allItemSentences = self.__featureProvider.GetFeatureReviewsById(featureId)
+        #2.get all items ids
+        print 1
+        itemidsList = set([sentence[8] for sentence in allItemSentences[0]])
+        featureReviews = {}
+        for itemid in itemidsList:
+            print str(itemid) + ' begin'
+            itemSentences = [sentence  for sentence in allItemSentences[0] if sentence[8] == itemid]
+            featureReviews[itemid] = self.__GetItemObject(itemid, itemSentences)
+            print str(itemid) + ' end' 
+        return featureReviews
         
     def GetReviewsTextByFeatureIds(self, featureIdsList, polarity = Polarity.ALL):
         listOfSentences = self.__featureProvider.GetReviewsSentencesByFeatureIds(featureIdsList)
@@ -39,11 +46,12 @@ class ReviewHelper(object):
         reviews = []
         sentencesIdsList = [row[0] for row in listOfSentences]
         reviewIdList = list(OrderedDict.fromkeys([row[3] for row in listOfSentences]))
+        
         listOfDict = []
         listOfFeaturesInSetences = {}
         for i in xrange((len(sentencesIdsList)/2000)+1):
             listOfDict.append(self.__featureProvider.GetFeatureAsIsInSentences(sentencesIdsList[i*2000:i*2000+2000], listOfFeaturesIds))
-       
+          
         listOfFeaturesInSetences =   dict((k,v) for d in listOfDict for (k,v) in d.items())
         for reviewId in reviewIdList:
             review = ''
@@ -55,7 +63,7 @@ class ReviewHelper(object):
                         text = text.replace(listOfFeaturesInSetences[(int(feature),sentences[0])],'<feature_in_text id="'+str(feature)+'">'+listOfFeaturesInSetences[(int(feature),sentences[0])]+'</feature_in_text>')
                 review = review + '<sentences_in_text id="'+str(sentences[0])+'" polarity="'+str(sentences[2])+u'">'+text+u'</sentences_in_text>'
             reviews.append('<review id="'+str(reviewId)+'">' + review + '</review>')
-        print listOfFeaturesInSetences
+        print '**' 
         return reviews
 
     def __GetListOfReviewsId(self, listOfSentences):

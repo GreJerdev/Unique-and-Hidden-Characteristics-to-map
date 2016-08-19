@@ -38,6 +38,13 @@ def GetFeatures():
     responce = str(query.GetFeature(p))
     return  responce
 
+@app.route("/getfeatureinfo",methods=['GET'])
+def GetFeatureInfo():
+    featureId = request.args.get('featureId', '')
+    responce = str(query.GetFeatureInfo(featureId))
+    return  responce
+
+
 @app.route("/getfeaturesbyitemsid",methods=['GET'])
 def GetFeatureByItemsId():
     itemsStr = request.args.get('items', '')

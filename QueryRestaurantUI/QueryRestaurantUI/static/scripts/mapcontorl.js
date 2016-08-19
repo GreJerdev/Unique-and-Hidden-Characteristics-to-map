@@ -46,7 +46,7 @@ function CreateMapHalper (htmlcontroller) {
         var marker = new google.maps.Marker({
             position: loc,
             map: map,
-            Icon: 'http://maps.google.com/mapfiles/kml/paddle/red-circle.png',
+            Icon: 'http://maps.google.com/mapfiles/ms/micons/red-dot.png',
             title: text,
             item: id
         });
@@ -168,11 +168,14 @@ function CreateMapHalper (htmlcontroller) {
                 data: {items: items, features: features},
                 success: function (results) {
                     for (m in markers) {
-                        if (results.items.indexOf(markers[m].item) > -1) {
-                            markers[m].setIcon('http://maps.google.com/mapfiles/kml/paddle/grn-circle.png')
+                        if (results.items.HaveAllFeatures.indexOf(markers[m].item) > -1) {
+                            markers[m].setIcon('http://maps.google.com/mapfiles/ms/micons/green-dot.png')
+                        }
+                        else if (results.items.HavePartOFFeatures.indexOf(markers[m].item) > -1) {
+                            markers[m].setIcon('http://maps.google.com/mapfiles/ms/micons/yellow-dot.png')
                         }
                         else {
-                            markers[m].setIcon('http://maps.google.com/mapfiles/kml/paddle/red-circle.png')
+                            markers[m].setIcon('http://maps.google.com/mapfiles/ms/micons/red-dot.png')
                         }
                     }
                 }

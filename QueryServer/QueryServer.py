@@ -53,6 +53,17 @@ class QueryServer:
             itemsIds = [row for row in results[0]]
         return itemsIds
 
+    def GetFeatureInfo(self, featureId):
+        itemsSearchResult = self.GetItemsIdByFeatureList([featureId])
+        itemIds = [str(item[0]) for item in itemsSearchResult]
+        featureInfo = dict()
+        featureInfo["items"] = itemIds
+        featureInfo["reviews"] = self.GetReviewsTextByFeatureId(featureId)
+        #for each itemid in itemIds self.GetItemReviewsIdByItemId(itemIds)
+        #get all polareties for items and reviews for feature
+        #get all reviews text for feature
+        return featureInfo
+    
     def SearchItemsByFeatures(self, listOfFeatures):
         itemsSearchResult = self.GetItemsIdByFeatureList(listOfFeatures)
         itemIds = [str(item[0]) for item in itemsSearchResult]
@@ -133,9 +144,10 @@ class QueryServer:
         polarity = CalculatePolarity (polaritylist)
         return polarity
 
-    def GetReviewsTextByItemIdAndFeatureIds(self,itemId, featureIdsList, polarity = Polarity.ALL):
+    def GetReviewsTextByFeatureId(self,featureIdsList, polarity = Polarity.ALL):
+        
         reviewHalper = ReviewHelper(self.__featureDBProvider)
-        return reviewHalper.GetReviewsTextByItemIdAndFeatureIds(itemId, featureIdsList, polarity = Polarity.ALL)
+        return reviewHalper.GetReviewsTextByFeatureId(featureIdsList)
 
     def GetReviewsTextByFeatureIds(self, featureIdsList):
         reviewHalper = ReviewHelper(self.__featureDBProvider)
@@ -143,15 +155,14 @@ class QueryServer:
 
     def GetItemsWithFeatures(self,items,features):
         features_items = self.GetItemsIdByFeatureList(features)
-      
-        itemsId = [item[0] for item in features_items]
-        itemsAsInt = [int(item) for item in items if len(item) > 0]
-        result = [item for item in itemsAsInt if item in itemsId]
-        return result
+        numberOfFeatures = len(features)
+        itemsIdWithAllFeatures = [item[0] for item in features_items if item[2] >= numberOfFeatures and str(item[0]) in items]
+        itemsIdWithPartOfFeatures = [item[0] for item in features_items if item[2] < numberOfFeatures and str(item[0]) in items]
+        reult = dict()
+        reult["HaveAllFeatures"] = itemsIdWithAllFeatures
+        reult["HavePartOFFeatures"] = itemsIdWithPartOfFeatures
+        return reult
 
-    def GetItemReview(reviewId):
-        GetReviewsTextByItemIdAndFeatureIds
-        pass
     
     def GetAllItems(self):
         results = self.__itemsDBProvider.GetAllItems()
@@ -204,7 +215,7 @@ if __name__ == '__main__':
     #itemFeatures = [feature[1] for feature in server.GetFeatureByItemId('131,')]
     #print itemFeatures
     #print server.GetReviewsTextByItemIdAndFeatureIds('131',itemFeatures)
-    review = server.GetReviewsTextByItemId('130')
+    #review = server.GetReviewsTextByItemId('130')
      
     
     #print server.GetAllItems()
@@ -220,5 +231,5 @@ if __name__ == '__main__':
     #    for r in  server.GetReviewsTextByFeatureIds([133,131,132,130,141,1,2,3,4,1,54,34,65,34,234,654,34,7,6,87,80,87,67,655,887,766,996,455]):
     #        f.write(r)
 
-    print server.SearchItemsByFeatures([1,2,3,4,5,234,433,1001])
+    server.GetFeatureInfo(140)
   
