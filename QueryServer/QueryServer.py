@@ -57,13 +57,28 @@ class QueryServer:
         itemsSearchResult = self.GetItemsIdByFeatureList([featureId])
         itemIds = [str(item[0]) for item in itemsSearchResult]
         featureInfo = dict()
+        featureInfo["info"] = self.GetFeatureStatistics(featureId)
         featureInfo["items"] = itemIds
         featureInfo["reviews"] = self.GetReviewsTextByFeatureId(featureId)
         #for each itemid in itemIds self.GetItemReviewsIdByItemId(itemIds)
         #get all polareties for items and reviews for feature
         #get all reviews text for feature
         return featureInfo
-    
+
+    def GetFeatureStatistics(self, featureId):
+        allItemSentences = self.__featureDBProvider.GetFeatureReviewsById(featureId)
+        statistic = dict()
+        setences = [row for row in allItemSentences[0] if str(row[3]) == str(featureId) ]
+        items = list(set([row[8] for row in setences]))
+        statistic["posSetences"] = len([row for row in setences if row[7] > 0])
+        statistic["negSetences"] = len([row for row in setences if row[7] < 0])
+        statistic["netSetences"] = len([row for row in setences if row[7] == 0])
+        statistic["items"] = len(items)
+        statistic["reviews"] = len(set([row[1] for row in setences]))
+        statistic["nounsForms"] = list (set([row[5] for row in setences ]))
+        statistic["itemSentement"] = {id: CalculatePolarity([row[7] for row in setences if row[8] == id]) for id in items}
+        return statistic
+        
     def SearchItemsByFeatures(self, listOfFeatures):
         itemsSearchResult = self.GetItemsIdByFeatureList(listOfFeatures)
         itemIds = [str(item[0]) for item in itemsSearchResult]
@@ -144,10 +159,9 @@ class QueryServer:
         polarity = CalculatePolarity (polaritylist)
         return polarity
 
-    def GetReviewsTextByFeatureId(self,featureIdsList, polarity = Polarity.ALL):
-        
+    def GetReviewsTextByFeatureId(self,featureId):
         reviewHalper = ReviewHelper(self.__featureDBProvider)
-        return reviewHalper.GetReviewsTextByFeatureId(featureIdsList)
+        return reviewHalper.GetReviewsTextByFeatureId(featureId)
 
     def GetReviewsTextByFeatureIds(self, featureIdsList):
         reviewHalper = ReviewHelper(self.__featureDBProvider)
@@ -196,7 +210,10 @@ class QueryServer:
             polaritylist = list([pol[2] for pol in listOfSentences[0]])
         return polaritylist
 
-    
+    def bulkTest(self):
+        self.__featureDBProvider.BulkTest()
+
+        
 
 server = None
 import codecs
@@ -231,5 +248,4 @@ if __name__ == '__main__':
     #    for r in  server.GetReviewsTextByFeatureIds([133,131,132,130,141,1,2,3,4,1,54,34,65,34,234,654,34,7,6,87,80,87,67,655,887,766,996,455]):
     #        f.write(r)
 
-    server.GetFeatureInfo(140)
-  
+    print server.GetFeatureStatistics("140") 

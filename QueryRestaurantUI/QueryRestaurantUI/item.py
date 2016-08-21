@@ -1,12 +1,14 @@
 import sys
-from QueryRestaurantUI import app
+import urllib2
+import ast
+
 from flask import render_template
 from flask import jsonify
 from flask import Flask
 from flask import request
+from QueryRestaurantUI import app
 from connector import getEngineUrl
-import urllib2
-import ast
+from DBHelper import sourceDBProvider
 
 @app.route('/allpoints')
 def GetAllItems():
@@ -58,10 +60,12 @@ def GetItem():
         args = '?id={0}'.format(id)
         url = getEngineUrl() + "/getreviewsentencesbyitemid" + args
         itemsInStrArr = urllib2.urlopen(url).read()
+        items = {}
         items = ast.literal_eval(itemsInStrArr)
         url = getEngineUrl() + "/getfeaturebyitemid" + args
+        features = {}
         features = ast.literal_eval(urllib2.urlopen(url).read())
-        #url = getEngineUrl() + "/getsimilaritems" + args
+        url = getEngineUrl() + "/getsimilaritems" + args
         similaritems = {}
         #similaritems  = ast.literal_eval(urllib2.urlopen(url).read())
         result['reviews'] = items['reviews']

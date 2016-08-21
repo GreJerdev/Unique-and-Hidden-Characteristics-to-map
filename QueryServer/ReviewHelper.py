@@ -22,10 +22,8 @@ class ReviewHelper(object):
         itemidsList = set([sentence[8] for sentence in allItemSentences[0]])
         featureReviews = {}
         for itemid in itemidsList:
-            print str(itemid) + ' begin'
             itemSentences = [sentence  for sentence in allItemSentences[0] if sentence[8] == itemid]
             featureReviews[itemid] = self.__GetItemObject(itemid, itemSentences)
-            print str(itemid) + ' end' 
         return featureReviews
         
     def GetReviewsTextByFeatureIds(self, featureIdsList, polarity = Polarity.ALL):

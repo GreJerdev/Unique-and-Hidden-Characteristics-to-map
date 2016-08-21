@@ -5,6 +5,7 @@ from flask import jsonify
 from flask import Flask
 from flask import request
 from connector import getEngineUrl
+from DBHelper import sourceDBProvider
 import urllib2
 import ast
 
@@ -68,11 +69,25 @@ def GetFeatureByItemsId():
 def SearchItemsByFeatures():
     try:
        featuresList = request.args.get('features')
-       print featuresList
        args = '?features={0}'.format(featuresList)
        url = getEngineUrl()+"/searchitemsbyfeatures"+args
        dataItemAndFeatures = urllib2.urlopen(url).read()
        info = ast.literal_eval(dataItemAndFeatures)
+    except:
+       e = sys.exc_info()[0]
+       print e
+    return jsonify(info)
+
+@app.route('/getfeatureinfo', methods=['GET'])
+def GetGeatureInfo():
+    try:
+       featuresList = request.args.get('featureId')
+       args = '?featureId={0}'.format(featuresList)
+       url = getEngineUrl()+"/getfeatureinfo"+args
+       feautreInfo = urllib2.urlopen(url).read()
+       info = ast.literal_eval(feautreInfo)
+       items = info["items"]
+       info["items"] = {item[0][0]: list(item[0]) for item in  sourceDBProvider.GetRestaurantInfo(items)}
     except:
        e = sys.exc_info()[0]
        print e

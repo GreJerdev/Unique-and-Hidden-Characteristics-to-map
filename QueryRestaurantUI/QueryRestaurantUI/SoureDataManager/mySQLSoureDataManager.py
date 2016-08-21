@@ -15,8 +15,7 @@ class Command(object):
     @ProcName.setter
     def ProcName(self, value):
         self._procName = value
-        print self._procName
-        
+
     @property
     def Args(self):
         return self._args
@@ -24,7 +23,6 @@ class Command(object):
     @Args.setter
     def Args (self, value):
         self._args =  value
-        print self._args
 
 class mySQLSoureDataManager(BaseSoureDataManager):
  
@@ -34,7 +32,7 @@ class mySQLSoureDataManager(BaseSoureDataManager):
 
     def WriteLog(self, logLevel, message):
         if not(self._logWriter is None) :
-           self._logWriter.WriteLog(logLevel,messge)
+           self._logWriter.WriteLog(logLevel,message)
         else:
            print(message)
 
@@ -42,14 +40,12 @@ class mySQLSoureDataManager(BaseSoureDataManager):
         args = (params.lat,params.lon,params.dis)
         return self.__CallProcWithParameter('usp_get_restorans_by_location',args)
 
-    def GetFeatureOfItemsByIds(self, itemsIds):
-        pass
-
-    def GetFeatureSentimentsByItemId(self, itemId, featureId):
-        pass
-
-    def GetItemsIdByFeatureList(self, featureIds):
-        pass
+    def GetRestaurantInfo(self, idsList):
+        listOfCommands = list()
+        for id in idsList:
+            listOfCommands.append(Command('usp_get_restaurant_info',(id,)))    
+        return self.__CallProcWithParameterBulk(listOfCommands)
+           
         
     def GetAllItems(self):
         return self.__CallProcWithParameter('usp_get_all_restorans',())
@@ -82,7 +78,6 @@ class mySQLSoureDataManager(BaseSoureDataManager):
             cursor = conn.cursor()
 
             for commandAndParameters in listCommandsAndParameters:
-                print commandAndParameters.ProcName, commandAndParameters.Args
                 cursor.callproc(commandAndParameters.ProcName, commandAndParameters.Args)
                 cursor.fetchone()
                 results = cursor.stored_results()

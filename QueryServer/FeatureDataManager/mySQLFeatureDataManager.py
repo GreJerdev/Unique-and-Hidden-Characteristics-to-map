@@ -2,6 +2,30 @@ import mysql.connector
 from BaseFeatureDataManager import BaseFeatureDataManager
 from mysql.connector import Error
 
+class Command(object):
+
+    def __init__(self,procName = None, args = None):
+        self._procName = procName
+        self._args = args
+    
+    @property
+    def ProcName(self):
+        return self._procName
+
+    @ProcName.setter
+    def ProcName(self, value):
+        self._procName = value
+        print self._procName
+        
+    @property
+    def Args(self):
+        return self._args
+
+    @Args.setter
+    def Args (self, value):
+        self._args =  value
+        print self._args    
+
 class mySQLFeatureDataManager(BaseFeatureDataManager):
  
     def __init__(self, configuration,logWriter=None):
@@ -71,7 +95,6 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
     def GetReviewSentencesById(self,reviewId):
         args = (reviewId,)
         return self.__CallProcWithParameter('csp_get_review_sentences_by_id',args)
-
         
     def GetFeatureAsIsInSentences(self,sentencesIdsList, featuresIdsList):
         featuresids = ','.join([str(feature) for feature in featuresIdsList])
@@ -112,6 +135,43 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
             cnx.close()
        
         return results
+
+    def __CallProcWithParameterBulk(self,listCommandsAndParameters):
+        retVals = list()
+        try:
+            conn = mysql.connector.connect(user=self._Configuration.user, 
+            password=self._Configuration.password, 
+            host=self._Configuration.host, database=self._Configuration.databaseName)
+            cursor = conn.cursor()
+
+            for commandAndParameters in listCommandsAndParameters:
+                print commandAndParameters.ProcName, commandAndParameters.Args
+                cursor.callproc(commandAndParameters.ProcName, commandAndParameters.Args)
+                cursor.fetchone()
+                results = cursor.stored_results()
+                for result in results:
+                    table = list()
+                    for row in result:
+                        table.append(row)
+                    retVals.append(table)
+
+            conn.commit()
+        except Error as e:
+            self.WriteLog(4, e) 
+             
+        finally:
+            cursor.close()
+            conn.close()
+        return retVals
+
+    def BulkTest(self):
+        listCP = list()
+        listCP.append(Command('csp_get_reviews_by_feature_id',(1,)))
+        listCP.append(Command('csp_get_reviews_by_feature_id',(2,)))
+        listCP.append(Command('csp_get_reviews_by_feature_id',(3,)))
+        listCP.append(Command('csp_get_reviews_by_feature_id',(4,)))
+        for table in self.__CallProcWithParameterBulk(listCP):
+            print len(table)
     
     def __CallProcWithParameter(self,procName,args):
         retVals = list()
