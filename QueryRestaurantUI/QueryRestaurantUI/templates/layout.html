@@ -39,19 +39,6 @@
 
 					<button type="button" class="btn btn-default navbar-btn" onclick="MainControl.GoogleMapHelper.ShowAll()">Show all</button>
 					<button type="button" class="btn btn-default navbar-btn" onclick="MainControl.GoogleMapHelper.cleanMap()">Clean Map</button>
-					<li class="active"><a href="#">Link</a></li>
-					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li><a href="#">Action</a></li>
-							<li><a href="#">Another action</a></li>
-							<li><a href="#">Something else here</a></li>
-							<li role="separator" class="divider"></li>
-							<li><a href="#">Separated link</a></li>
-							<li role="separator" class="divider"></li>
-							<li><a href="#">One more separated link</a></li>
-						</ul>
-					</li>
 				</ul>
 				<form class="navbar-form navbar-left">
 					<div class="form-group">
@@ -79,6 +66,29 @@
 
 	</div>
 	<div id="mainPopup"/>
+	<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="infoDataMainLargeModalLabel" id="infoDataMain">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <span class="close" onclick="$(function () {$('#infoDataMain').modal('toggle');});">x</span>
+                <span id="dialogNav"></span>
+                <div class="tab-content" style="overflow-y:scroll;height:80%;" id="dialogContent">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+	<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="infoFeatureLargeModalLabel" id="infoFeature">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <span class="close" onclick="$(function () {$('#infoFeature').modal('toggle');});">x</span>
+                <span id="featureDialogNav"></span>
+                <div class="tab-content" style="overflow-y:scroll;height:80%;" id="featureDialogContent">
+
+                </div>
+            </div>
+        </div>
+    </div>
 
 	<script type="text/javascript">
 		$(document).ready(function() {

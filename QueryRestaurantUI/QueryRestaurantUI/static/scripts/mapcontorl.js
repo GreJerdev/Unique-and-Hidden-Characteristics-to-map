@@ -73,21 +73,8 @@ function CreateMapHalper (htmlcontroller) {
             url: 'getitem',
             data: {id: id},
             success: function (results) {
-                var reviewsHtml = '';
-                if (results.reviews.constructor === Array) {
-                    var i = 0;
-                    for (i = 0; i < results.reviews.length; i++) {
-                        reviewsHtml += htmlcontroller.createReview(results.reviews[i])
-                    }
-                    $('#itemReviews').html('<div class="container-fluid">' + reviewsHtml + '</div>');
-                    $('#generalInfo').html('<div class="container-fluid">' + reviewsHtml + '</div>');
-                    $('#features').html('<div class="container-fluid">' + htmlcontroller.createFeatures(id,results.features,results.reviews) + '</div>');
-                    //$('#similar').html('<div class="container-fluid">' + htmlcontroller.createSimilarItems(id,results.similarItems) + '</div>');
-                    hideAll();
-                    $('#infoDataMain').modal('toggle');
-                    $('#infoDataMain').modal('show');
-
-                }
+                htmlcontroller.showRestaurantDetails(id, results);
+                hideAll();
             }
         });
 
@@ -217,6 +204,11 @@ function CreateMapHalper (htmlcontroller) {
             text += '<button type="button" class="btn btn-default" feature="' + results.features[i][1] + '" onclick="MainControl.GoogleMapHelper.featureClick(' + results.features[i][1] + ')">' + results.features[i][0] + '(' + results.features[i][2] + ')' + '</button>'
         }
         $('#homeInfo').html(text);
+         text = '';
+        for (i = 0; i < results.features.length; i++) {
+           text += '<button type="button" class="btn btn-default" feature="' + results.features[i][1] + '" onclick="FeatureHelper.featureManager.getFeatureInfo(' + results.features[i][1] + ')">' + results.features[i][0] + '(' + results.features[i][2] + ')' + '</button>'
+        }
+        $('#features').html(text);
 
     }
     function ShowItems(data, itemUrl, featureUrl) {
@@ -265,6 +257,5 @@ function CreateMapHalper (htmlcontroller) {
 var htmlcontroller = htmlManager.htmlGenerator
 var MainControl = MainControl || {}
 MainControl.GoogleMapHelper = CreateMapHalper(htmlManager.htmlGenerator);
-
 var FeatureHelper = FeatureHelper || {}
-FeatureHelper.featureManager = CreateFeatureHelper(MainControl.GoogleMapHelper);
+FeatureHelper.featureManager = CreateFeatureHelper(MainControl.GoogleMapHelper,htmlManager.htmlGenerator);

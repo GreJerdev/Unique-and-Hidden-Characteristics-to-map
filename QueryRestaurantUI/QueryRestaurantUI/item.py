@@ -68,6 +68,7 @@ def GetItem():
         url = getEngineUrl() + "/getsimilaritems" + args
         similaritems = {}
         #similaritems  = ast.literal_eval(urllib2.urlopen(url).read())
+        result['restaurantInfo'] =  {item[0][0]: list(item[0]) for item in  sourceDBProvider.GetRestaurantInfo([id])}
         result['reviews'] = items['reviews']
         result['features'] = features
         result['similarItems'] = similaritems
