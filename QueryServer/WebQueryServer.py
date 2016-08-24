@@ -28,13 +28,16 @@ def GetFeatures():
 
     lat = request.args.get('lat', '')
     lon = request.args.get('lon', '')
+    distance = request.args.get('distance', '2')
     try:
         float(lat)
         float(lon)
+        float(distance)
     except ValueError:
         return '[]'
     p.lat = lat
     p.lon = lon
+    p.dis = distance
     responce = str(query.GetFeature(p))
     return  responce
 
@@ -62,15 +65,18 @@ def GetItems():
 
     lat = request.args.get('lat', '')
     lon = request.args.get('lon', '')
+    distance = request.args.get('distance', '')
     try:
         float(lat)
         float(lon)
+        float(distance)
     except ValueError:
         print 'error'
         return '[]'
         
     p.lat = lat
     p.lon = lon
+    p.dis = distance
     items = query.GetItems(p)
     responce = jsonify({'items':items})
     return  responce

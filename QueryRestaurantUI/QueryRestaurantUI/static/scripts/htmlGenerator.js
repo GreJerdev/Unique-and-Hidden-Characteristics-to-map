@@ -222,7 +222,7 @@ function GetHtmlGeneratorHelper () {
             + '    <a data-toggle="tab" href="#itemReviews">Reviews</a>'
             + '</li>'
             + '<li>'
-            + '    <a data-toggle="tab" href="#features">Features</a>'
+            + '    <a data-toggle="tab" href="#itemFeatures">Features</a>'
             + '</li>'
             /*  + '<li>'
              + '    <a data-toggle="tab" href="#similar">Similar </a>'
@@ -370,7 +370,7 @@ function GetHtmlGeneratorHelper () {
         var reviewsHtml = '';
         var generalInfo = '<div id="generalInfo" class="tab-pane fade in active">';
         var itemReviews = '<div id="itemReviews" class="tab-pane fade" style="height:80%;">';
-        var features = '<div id="features" class="tab-pane fade">';
+        var features = '<div id="itemFeatures" class="tab-pane fade">';
         var similar = '<div id="similar" class="tab-pane fade">';
 
         if (details.reviews.constructor === Array) {

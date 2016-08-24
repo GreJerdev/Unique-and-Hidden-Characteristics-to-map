@@ -9,23 +9,118 @@ function CreateMapHalper (htmlcontroller) {
     var markers = [];
     var selectedFeatures = [];
     var searchCircle = null;
+    var centerOfSearchLatLong = undefined;
+    var searchOnMap = false;
+    var centerOfSearchSelected = false;
+    var centerOfSearchControlDiv = document.createElement('div');
+    var centerOfSearchControl;
+    var controlUI = document.createElement('div');
+    var controlText = document.createElement('div');
+
+    function SearchOnMapControl(controlDiv, map) {
+
+        // Set CSS for the control border.
+        controlUI.style.backgroundColor = 'rgb(225,0,0)';
+        controlUI.style.border = '2px solid #fff';
+        controlUI.style.borderRadius = '3px';
+        controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+        controlUI.style.cursor = 'pointer';
+        controlUI.style.marginBottom = '22px';
+        controlUI.style.textAlign = 'select search area';
+        controlUI.title = 'Click to select search area on the map';
+        controlDiv.appendChild(controlUI);
+
+        // Set CSS for the control interior.
+        controlText.style.color = 'rgb(25,25,25)';
+        controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+        controlText.style.fontSize = '16px';
+        controlText.style.lineHeight = '38px';
+        controlText.style.paddingLeft = '5px';
+        controlText.style.paddingRight = '5px';
+        controlText.innerHTML = 'Click Here for Map Search';
+        controlUI.appendChild(controlText);
+
+        // Setup the click event listeners: simply set the map to Chicago.
+        controlUI.addEventListener('click', StartSelectingSearchArea);
+
+    }
+
+    function mouseMove(event) {
+        if (searchOnMap == true) {
+            if (centerOfSearchSelected == true) {
+                var radius = google.maps.geometry.spherical.computeDistanceBetween(centerOfSearchLatLong, event.latLng);
+                if (searchCircle != undefined) {
+                    searchCircle.setMap(null);
+                }
+                searchCircle = new google.maps.Circle({
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.15,
+                    map: map,
+                    center: centerOfSearchLatLong,
+                    radius: radius
+                });
+                google.maps.event.addListener(searchCircle, 'click', mapOnClick);
+                google.maps.event.addListener(searchCircle, "mousemove", mouseMove);
+
+            }
+        }
+    }
 
     function mapOnClick(event) {
-        ShowItems({lat: event.latLng.lat, lon: event.latLng.lng}, 'getitemsnearme', 'getfeaturesnearme');
-        if (searchCircle != null) {
+        if (searchOnMap == true) {
+            if (centerOfSearchSelected == false) {
+                centerOfSearchLatLong = event.latLng;
+                centerOfSearchSelected = true;
+            }
+            else {
+                var radius = google.maps.geometry.spherical.computeDistanceBetween(centerOfSearchLatLong, event.latLng);
+                radius = radius / 1600
+                centerOfSearchSelected = false;
+                if (searchCircle != undefined) {
+                    searchCircle.setMap(null);
+                }
+                searchCircle = new google.maps.Circle({
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.15,
+                    map: map,
+                    center: centerOfSearchLatLong,
+                    radius: radius * 1600
+                });
+                google.maps.event.addListener(searchCircle, 'click', mapOnClick);
+                google.maps.event.addListener(searchCircle, "mousemove", mouseMove);
+                FinishSelectingSearchArea();
+                ShowItems({
+                    lat: centerOfSearchLatLong.lat,
+                    lon: centerOfSearchLatLong.lng,
+                    distance: radius
+                }, 'getitemsnearme', 'getfeaturesnearme');
+
+            }
+        }
+    }
+
+    function FinishSelectingSearchArea() {
+        controlUI.style.backgroundColor = 'rgb(225,0,0)';
+        controlText.innerHTML = 'Click Here for Map Search';
+        searchOnMap = false;
+        centerOfSearchSelected == false
+    }
+
+    function StartSelectingSearchArea() {
+        controlUI.style.backgroundColor = 'rgb(0,225,0)';
+        controlText.innerHTML = 'Select on Map Search Area';
+        centerOfSearchSelected == false;
+        searchOnMap = true;
+        clearMarkers();
+        if (searchCircle != undefined) {
             searchCircle.setMap(null);
         }
-        searchCircle = new google.maps.Circle({
-            strokeColor: '#FF0000',
-            strokeOpacity: 0.8,
-            strokeWeight: 2,
-            fillColor: '#FF0000',
-            fillOpacity: 0.35,
-            map: map,
-            center: event.latLng,
-            radius: 3.21869 * 1000
-        });
-        searchCircle.addListener('click', mapOnClick)
     }
 
     function initMap() {
@@ -37,6 +132,10 @@ function CreateMapHalper (htmlcontroller) {
         });
 
         map.addListener('click', mapOnClick);
+        google.maps.event.addListener(map, "mousemove", mouseMove);
+        centerOfSearchControl = new SearchOnMapControl(centerOfSearchControlDiv, map);
+        centerOfSearchControlDiv.index = 1;
+        map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerOfSearchControlDiv);
     }
 
     function addMarker(loc, text, id) {
@@ -114,7 +213,6 @@ function CreateMapHalper (htmlcontroller) {
 
     function clearMarkers() {
         setMapOnAll(null);
-
     }
 
     function cleanMap() {
@@ -180,14 +278,14 @@ function CreateMapHalper (htmlcontroller) {
     }
 
     function AddMarkers (markers) {
-                deleteMarkers();
-                selectedFeatures = [];
-                markers.items.items.forEach(function (point) {
-                    var loc = {lat: parseFloat(point.lat), lng: parseFloat(point.lng)};
-                    MainControl.GoogleMapHelper.addMarker(loc, point.Name, point.id);
-                })
+        deleteMarkers();
+        selectedFeatures = [];
+        markers.items.items.forEach(function (point) {
+            var loc = {lat: parseFloat(point.lat), lng: parseFloat(point.lng)};
+            MainControl.GoogleMapHelper.addMarker(loc, point.Name, point.id);
+        })
 
-            }
+    }
 
     function updateMapsItems(itemUrl, data) {
         $.ajax({
@@ -204,9 +302,9 @@ function CreateMapHalper (htmlcontroller) {
             text += '<button type="button" class="btn btn-default" feature="' + results.features[i][1] + '" onclick="MainControl.GoogleMapHelper.featureClick(' + results.features[i][1] + ')">' + results.features[i][0] + '(' + results.features[i][2] + ')' + '</button>'
         }
         $('#homeInfo').html(text);
-         text = '';
+        text = '';
         for (i = 0; i < results.features.length; i++) {
-           text += '<button type="button" class="btn btn-default" feature="' + results.features[i][1] + '" onclick="FeatureHelper.featureManager.getFeatureInfo(' + results.features[i][1] + ')">' + results.features[i][0] + '(' + results.features[i][2] + ')' + '</button>'
+            text += '<button type="button" class="btn btn-default" feature="' + results.features[i][1] + '" onclick="FeatureHelper.featureManager.getFeatureInfo(' + results.features[i][1] + ')">' + results.features[i][0] + '(' + results.features[i][2] + ')' + '</button>'
         }
         $('#features').html(text);
 

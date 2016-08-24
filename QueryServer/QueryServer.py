@@ -16,6 +16,7 @@ class QueryServer:
         self.__itemsDBProvider = FactorySoureDataManager.GetSourceDataManager(config)
 
     def GetItems(self, properties):
+        print properties
         results = self.__itemsDBProvider.GetItemsByCostomFilter(properties)
         itemsIds = list()
         if len(results) > 0:
