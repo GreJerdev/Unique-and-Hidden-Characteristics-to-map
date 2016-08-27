@@ -71,3 +71,27 @@ flex-direction: column;
 {
     width: 600px !important;
 }
+
+.featureInfo td{
+    margin-top: 5px;
+    margin-bottom: 4px;
+}
+
+.featureName {
+    margin-top: 5px;
+    margin-bottom: 4px;
+    font-size: 24px;
+    orphans: 3;
+    widows: 3;
+    font-weight: bold;
+}
+
+
+.featureProperty {
+    padding-top: 17px !important;
+    margin-bottom: 4px;
+    font-size: 15px;
+    orphans: 3;
+    widows: 3;
+    font-weight: bold;
+}

@@ -127,7 +127,7 @@ function GetHtmlGeneratorHelper () {
         var html = '<div id="featuresSentences">'
         for (index in featuresInfo.featureOrder) {
             name = featuresInfo.featureInfo[featuresInfo.featureOrder[index]].name;
-            featureHtml = '<div id="'+name+'" style="display:none" class="featuresInfo">';
+            featureHtml = '<div id="'+name+'" style="display:none" class="featuresInfo"><table class="table">';
             var numberOfAllSentences = featuresInfo.frequencyOfMentions[featuresInfo.featureOrder[index]].positive +
                                        featuresInfo.frequencyOfMentions[featuresInfo.featureOrder[index]].negative +
                                        featuresInfo.frequencyOfMentions[featuresInfo.featureOrder[index]].neutral
@@ -142,18 +142,32 @@ function GetHtmlGeneratorHelper () {
             var percentNegativeInPhoenix =  numberOfNegativeInPhoenix * 100 / numberOfAllSentences;
             var percentPositive =  numberOfPositiveInRestaurent * 100 / numberOfAllSentencesInRestaurent;
             var percentNegative =  numberOfNegativeInRestaurent * 100 / numberOfAllSentencesInRestaurent;
+            var polarity = featuresInfo.featureInfo[featuresInfo.featureOrder[index]].polarity;
 
-            var pmsg  = '<div>Positive sentences of "'+ name +'" '+percentPositive.toFixed(2) +'% '+numberOfPositiveInRestaurent+'' +
-                ' ; In Phoenix '+percentPositiveInPhoenix.toFixed(2) +'%  '+ numberOfPositiveInPhoenix+'.</div>';
-            var nmsg = '<div>Negative sentences of "'+ name +'" '+percentNegative.toFixed(2)+'% '+numberOfNegativeInRestaurent+'' +
-                ' ; In Phoenix '+percentPositiveInPhoenix.toFixed(2) +'%  '+ numberOfNegativeInPhoenix+'.</div>';
-            featureHtml += pmsg + nmsg;
-                for (sentenceIndex in featuresInfo.featureInfo[featuresInfo.featureOrder[index]].sentences) {
-                    var sentence = featuresInfo.featureInfo[featuresInfo.featureOrder[index]].sentences[sentenceIndex];
-                    var sentenceHtml = '<div reviewId="'+sentence.reviewId+'" class="'+getColorClassByPolarity(sentence.polarity)+'">'+sentence.text+'</div>';
-                    featureHtml += sentenceHtml
-                }
-            featureHtml += '</div>';
+            var headLine =  '<tr class="'+getColorClassByPolarity(polarity)+'">' +
+                '<td><span class="featureName">'+name+'</span></td>' +
+                '<td class="featureProperty">Feature polarity</span></td>' + '<td class="featureProperty">' + getClassByPolarity(polarity)+'</span></td>' +
+                '<td><button type="button"class="btn" onclick="  $(\'#featuresSentences .featuresInfo\').hide();">hide</button></td>' +
+                '</tr>'
+            var pmsg  = '<tr> <td colspan="4"><div class="bg-info">Positive sentences of "'+ name +'" '+percentPositive.toFixed(2) +'% '+numberOfPositiveInRestaurent+'' +
+                ' ; In Phoenix '+percentPositiveInPhoenix.toFixed(2) +'%  '+ numberOfPositiveInPhoenix+'.</td> </tr></div>';
+            var nmsg = '<tr> <td colspan="4"><div class="bg-info">Negative sentences of "'+ name +'" '+percentNegative.toFixed(2)+'% '+numberOfNegativeInRestaurent+'' +
+                ' ; In Phoenix '+percentPositiveInPhoenix.toFixed(2) +'%  '+ numberOfNegativeInPhoenix+'.</td> </tr></div>';
+            featureHtml += headLine + pmsg + nmsg;
+
+            for (sentenceIndex in featuresInfo.featureInfo[featuresInfo.featureOrder[index]].positivePreview) {
+                var sentence = featuresInfo.featureInfo[featuresInfo.featureOrder[index]].positivePreview[sentenceIndex];
+                var sentenceHtml = '<tr> <td colspan="4"><div reviewId="'+sentence.reviewId+'" class="'+getColorClassByPolarity(sentence.polarity)+'">'+sentence.text+'</td> </tr></div>';
+                featureHtml += sentenceHtml
+            }
+
+            for (sentenceIndex in featuresInfo.featureInfo[featuresInfo.featureOrder[index]].negativePreview) {
+                var sentence = featuresInfo.featureInfo[featuresInfo.featureOrder[index]].negativePreview[sentenceIndex];
+                var sentenceHtml = '<tr> <td colspan="4"><div reviewId="'+sentence.reviewId+'" class="'+getColorClassByPolarity(sentence.polarity)+'">'+sentence.text+'</td> </tr></div>';
+                featureHtml += sentenceHtml
+            }
+
+            featureHtml += '</table></div>';
             html += featureHtml;
         }
         html+= '</div>'

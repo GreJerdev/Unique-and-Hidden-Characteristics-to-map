@@ -86,7 +86,9 @@ class QueryServer:
             featureInfo[featurId]["positive"] = len([sentences for sentences in featuresInfo[featurId]["sentences"] if sentences["polarity"] > 0 ])
             featureInfo[featurId]["negative"] = len([sentences for sentences in featuresInfo[featurId]["sentences"] if sentences["polarity"] < 0 ])
             featureInfo[featurId]["neutral"] = len([sentences for sentences in featuresInfo[featurId]["sentences"] if sentences["polarity"] == 0 ])
-            
+
+            featureInfo[featurId]["negativePreview"] = [s for s in featuresInfo[featurId]["sentences"] if s["polarity"] < 0 ][0:3]
+            featureInfo[featurId]["positivePreview"] = [s for s in featuresInfo[featurId]["sentences"] if s["polarity"] > 0 ][0:3]
             
         result["featureInfo"] = featureInfo
         result["featureOrder"] = featureOrder
