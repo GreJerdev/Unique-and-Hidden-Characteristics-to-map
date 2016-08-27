@@ -41,7 +41,7 @@ function CreateMapHalper (htmlcontroller) {
         controlUI.appendChild(controlText);
 
         // Setup the click event listeners: simply set the map to Chicago.
-        controlUI.addEventListener('click', StartSelectingSearchArea);
+        controlUI.addEventListener('click', StartSelectingSearchArea );
 
     }
 
@@ -64,7 +64,6 @@ function CreateMapHalper (htmlcontroller) {
                 });
                 google.maps.event.addListener(searchCircle, 'click', mapOnClick);
                 google.maps.event.addListener(searchCircle, "mousemove", mouseMove);
-
             }
         }
     }
@@ -74,6 +73,8 @@ function CreateMapHalper (htmlcontroller) {
             if (centerOfSearchSelected == false) {
                 centerOfSearchLatLong = event.latLng;
                 centerOfSearchSelected = true;
+                SelelctradiusOfSearchArea();
+
             }
             else {
                 var radius = google.maps.geometry.spherical.computeDistanceBetween(centerOfSearchLatLong, event.latLng);
@@ -81,6 +82,7 @@ function CreateMapHalper (htmlcontroller) {
                 centerOfSearchSelected = false;
                 if (searchCircle != undefined) {
                     searchCircle.setMap(null);
+
                 }
                 searchCircle = new google.maps.Circle({
                     strokeColor: '#FF0000',
@@ -112,9 +114,15 @@ function CreateMapHalper (htmlcontroller) {
         centerOfSearchSelected == false
     }
 
-    function StartSelectingSearchArea() {
+    function SelelctradiusOfSearchArea() {
         controlUI.style.backgroundColor = 'rgb(0,225,0)';
-        controlText.innerHTML = 'Select on Map Search Area';
+        controlText.innerHTML = 'Select on Map Radius of Search Area';
+    }
+
+    function StartSelectingSearchArea() {
+
+        controlUI.style.backgroundColor = 'rgb(255,255,51)';
+        controlText.innerHTML = 'Select on Map Center of Search Area';
         centerOfSearchSelected == false;
         searchOnMap = true;
         clearMarkers();
@@ -216,6 +224,7 @@ function CreateMapHalper (htmlcontroller) {
     }
 
     function cleanMap() {
+        FinishSelectingSearchArea();
         clearsearchCircle();
         clearMarkers();
     }

@@ -51,7 +51,24 @@ def GetReviewsTextByItemId():
         print e  
     return jsonify(items)
 
+@app.route('/getitem',methods=['GET', 'POST'])
+def GetItem():
+    result = {}
+    try:
+        id = request.args.get('id', '')
+        args = '?id={0}'.format(id)
+        url = getEngineUrl() + "/getitemfeaturesandfeaturesentencesbyitemid" + args
+        print url
+        featuresInfo = {}
+        featuresInfo = ast.literal_eval(urllib2.urlopen(url).read())
+        result['restaurantInfo'] =  {item[0][0]: list(item[0]) for item in  sourceDBProvider.GetRestaurantInfo([id])}
+        result['featuresInfo'] = featuresInfo
+    except:
+        e = sys.exc_info()[0]
+        print e
+    return jsonify(result)
 
+"""
 @app.route('/getitem',methods=['GET', 'POST'])
 def GetItem():
     result = {'reviews':{},'features':{},'similarItems':{}}
@@ -76,3 +93,4 @@ def GetItem():
         e = sys.exc_info()[0]
         print e
     return jsonify(result)
+"""

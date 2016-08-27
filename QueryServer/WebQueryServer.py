@@ -1,3 +1,4 @@
+import sys
 from flask import Flask
 from flask import request
 from flask import jsonify
@@ -248,7 +249,22 @@ def SearchItemsByFeatures():
     return str(result)
 
 
-        
+@app.route('/getitemfeaturesandfeaturesentencesbyitemid')
+def GetItemFeaturesAndFeatureSentencesByItemId():
+    responce = {}    
+    try: 
+        featuresStr = request.args.get('id', '')
+        id = request.args.get('id', '')
+        if tools.IsInt(id):
+            result = query.GetItemFeaturesAndFeatureSentencesByItemId(id)
+            responce = jsonify(result)
+       
+    except:
+            e = sys.exc_info()[0]
+            print e  
+    return responce
+    
+
 if __name__ == "__main__":
     configXml = GetConfiguraton(None)
     query  = QueryServer(configXml)

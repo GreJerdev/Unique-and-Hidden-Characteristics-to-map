@@ -41,6 +41,19 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
         args = (featureId,itemId,)
         return self.__CallProcWithParameter('csp_get_feature_sentence_by_item_id',args)
 
+    def GetFeaturesSentencesByItemId(self, featureIds, itemId ):
+        resultDic = dict()
+        listCP = list()
+
+        for featureId in featureIds:
+            listCP.append(Command('csp_get_feature_sentence_by_item_id',(featureId,itemId,)))
+        print featureIds
+        for table in self.__CallProcWithParameterBulk(listCP):
+            #featureId = table[0]
+            print table[0]
+
+###############
+    
     def GetItemReviewsIdByItemId(self, itemId ):
         args = (itemId,)
         return self.__CallProcWithParameter('csp_get_item_reviews_id_by_item_id',args)
@@ -64,6 +77,10 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
     def GetFeatureSentimentsById(self, featureId):
         args = (featureId,)
         return self.__CallProcWithParameter('csp_get_feature_sentence_feature_id',args)
+
+    
+    
+    
 
     def GetFeatureReviewsById(self, featureId):
         args = (featureId,)
@@ -106,9 +123,22 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
             result = { (row[0],row[1]): row[4] for row in queryResult[0]}
         return result
 
+    def GetItemAllItemSentencesWithFeature(self,itemId):
+        args = (itemId,)
+        result = {}
+        queryResult = self.__CallProcWithParameter('csp_get_item_all_item_sentences_with_feature',args)
+        return queryResult
+
     def GetAllFeatures(self):
         return self.__CallProcWithParameter('csp_get_all_features',())
-
+    
+    def GetAllFeaturesNumberOfSentences(self):
+        resultList = self.__CallProcWithParameter('csp_all_features_number_of_references',())[0]
+        features = {feature[0]:{'positive':int(feature[1]),\
+                                'negative':int(feature[2]),\
+                                'neutral':int(feature[3])} for feature in resultList}
+        return features
+    
     def GetReviewSentencesByReviewId(self, id):
         return self.__CallProcWithParameter('csp_get_review_sentences',(id,))
 
@@ -145,7 +175,6 @@ class mySQLFeatureDataManager(BaseFeatureDataManager):
             cursor = conn.cursor()
 
             for commandAndParameters in listCommandsAndParameters:
-                print commandAndParameters.ProcName, commandAndParameters.Args
                 cursor.callproc(commandAndParameters.ProcName, commandAndParameters.Args)
                 cursor.fetchone()
                 results = cursor.stored_results()

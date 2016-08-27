@@ -7,6 +7,7 @@ from ReviewHelper import ReviewHelper
 from CommonTypes import Polarity
 import QObjects 
 import json
+import time
 
 class QueryServer:
 
@@ -16,7 +17,6 @@ class QueryServer:
         self.__itemsDBProvider = FactorySoureDataManager.GetSourceDataManager(config)
 
     def GetItems(self, properties):
-        print properties
         results = self.__itemsDBProvider.GetItemsByCostomFilter(properties)
         itemsIds = list()
         if len(results) > 0:
@@ -66,6 +66,47 @@ class QueryServer:
         #get all reviews text for feature
         return featureInfo
 
+    def GetItemFeaturesAndFeatureSentencesByItemId(self,itemId):
+        start_time = time.time()
+
+        itemFeatures = self.__featureDBProvider.GetFeatureOfItemsByIds(itemId)
+        featureDict = {feature[1]:feature[0] for feature in itemFeatures[0]}
+        featuresSentences = self.__featureDBProvider.GetItemAllItemSentencesWithFeature(itemId)
+        featuresNumberOfSentences = self.__featureDBProvider.GetAllFeaturesNumberOfSentences()
+        featuresInfo = self.__CreateFeatureInfoForItem(featuresSentences[0])
+        result = dict()
+        featureOrder = [id[0] for id in sorted([(featureId,len(featuresInfo[featureId]["sentences"])) for featureId in featuresInfo.keys()],key=lambda x: x[1], reverse=True )]
+        featureInfo = dict()
+        for featurId in featureDict.keys():
+            featureInfo[featurId] = dict()
+            featureInfo[featurId]["sentences"] = featuresInfo[featurId]["sentences"]
+            featureInfo[featurId]["numberOfSentences"] = len(featuresInfo[featurId]["sentences"])
+            featureInfo[featurId]["polarity"] = featuresInfo[featurId]["polarity"]
+            featureInfo[featurId]["name"] = featureDict[featurId]
+            featureInfo[featurId]["positive"] = len([sentences for sentences in featuresInfo[featurId]["sentences"] if sentences["polarity"] > 0 ])
+            featureInfo[featurId]["negative"] = len([sentences for sentences in featuresInfo[featurId]["sentences"] if sentences["polarity"] < 0 ])
+            featureInfo[featurId]["neutral"] = len([sentences for sentences in featuresInfo[featurId]["sentences"] if sentences["polarity"] == 0 ])
+            
+            
+        result["featureInfo"] = featureInfo
+        result["featureOrder"] = featureOrder
+        result["frequencyOfMentions"] = featuresNumberOfSentences
+        return result
+        
+    def __CreateFeatureInfoForItem(self,listOfSentences):
+        featureListDict = dict()
+        featureList = {sentenceRow[6] for sentenceRow in listOfSentences}
+
+        for feature in featureList:
+            sentences = [{"text":sentenceRow[1],"polarity":sentenceRow[2],"reviewId":sentenceRow[3], \
+                        "tfIdf":sentenceRow[7]} \
+                        for sentenceRow in listOfSentences if sentenceRow[6] == feature]
+            polarity =  CalculatePolarity([sentenceRow[2] for sentenceRow in listOfSentences if sentenceRow[6] == feature])
+            featureListDict[feature] = {"sentences":sentences,"polarity":polarity}
+            
+        return featureListDict
+        
+    
     def GetFeatureStatistics(self, featureId):
         allItemSentences = self.__featureDBProvider.GetFeatureReviewsById(featureId)
         statistic = dict()
@@ -226,27 +267,4 @@ if __name__ == '__main__':
     p.lat = 33.5760986
     p.lon = -112.0659298
     p.dis = 2
-
-    arr = [9620,6127,6185,7739,12450,237,5950,280,4230,9793,222,12428,5621,5568,6206,13781,245,2243,2256,6201,13491,2254,11619,10088,226,3742,292,4488,13915]
-    feat = [61]
-    #server.GetItemsWithFeatures(arr,feat)
-    #itemFeatures = [feature[1] for feature in server.GetFeatureByItemId('131,')]
-    #print itemFeatures
-    #print server.GetReviewsTextByItemIdAndFeatureIds('131',itemFeatures)
-    #review = server.GetReviewsTextByItemId('130')
-     
-    
-    #print server.GetAllItems()
-    #server.testDB()
-    #ReviewHelper
-    #print len(server.GetFeature(p))
-    #print server.GetFeature(p)
-    #print server.GetFeaturepolarityGlobal(6)
-    #distance =  server.GetSimilarItems(2406)
-    #print server.ComperBetweenItems([2406,5724])
-    #print server.GetReviewsTextByItemIdAndFeatureIds([130],['1390','225'])
-    #with codecs.open("d:/yop.xml", "w", encoding="utf-8") as f:
-    #    for r in  server.GetReviewsTextByFeatureIds([133,131,132,130,141,1,2,3,4,1,54,34,65,34,234,654,34,7,6,87,80,87,67,655,887,766,996,455]):
-    #        f.write(r)
-
-    print server.GetFeatureStatistics("140") 
+    server.GetItemFeaturesAndFeatureSentencesByItemId("130") 

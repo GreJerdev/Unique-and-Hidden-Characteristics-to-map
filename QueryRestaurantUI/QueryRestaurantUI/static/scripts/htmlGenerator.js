@@ -2,7 +2,8 @@
 function GetHtmlGeneratorHelper () {
 
     var restaurantToCompare = [];
-
+    var chartConfig = undefined;
+    var featuresChart = undefined;
     function arrayToString(array) {
         var result = '';
         result = array.join(',');
@@ -51,6 +52,143 @@ function GetHtmlGeneratorHelper () {
         }
         return size;
     }
+
+    function createBarChartData(featuresInfo, id){
+        var featurelabelsOrder = [];
+        var datasets = [];
+        var positive = [];
+        var negative = []
+        var neutral = [];
+        var colorForPositive = [];
+        var colorForNegative = [];
+        var colorForNeutral = [];
+        for (index in featuresInfo.featureOrder) {
+            featurelabelsOrder.push(featuresInfo.featureInfo[featuresInfo.featureOrder[index]].name);
+            positive.push(featuresInfo.featureInfo[featuresInfo.featureOrder[index]].positive);
+            negative.push(featuresInfo.featureInfo[featuresInfo.featureOrder[index]].negative);
+            neutral.push(featuresInfo.featureInfo[featuresInfo.featureOrder[index]].neutral);
+            alpha = '0.2';
+            if (featuresInfo.featureOrder[index] in [1,2,3,4,5,6,7]){
+                alpha = '1'
+            }
+
+            colorForPositive.push('rgba(0, 225, 0, '+alpha+')');
+            colorForNegative.push('rgba(255,0, 0, '+alpha+')');
+            colorForNeutral.push('rgba(255, 206, 86, '+alpha+')');
+        }
+        var datasets = [] ;
+        datasets.push({
+						label: 'Negative',
+						fillColor: '#7BC225',
+						data: negative ,
+						backgroundColor:colorForNegative
+					});
+        datasets.push({
+						label: 'Neutral',
+						fillColor: '#7BC225',
+						data: neutral ,
+						backgroundColor:colorForNeutral
+					});
+        datasets.push({
+						label: 'Positive',
+						fillColor: '#7BC225',
+						data: positive ,
+						backgroundColor:colorForPositive
+					});
+        return {datasets:datasets,labels:featurelabelsOrder};
+    }
+
+    function createFeaturesInfo(featuresInfo,id) {
+        var chartBarData = createBarChartData(featuresInfo,id);
+        var chartBarCofgin = chart_config = {
+                                    type: "bar",
+                                    data: chartBarData,
+                                    options: {
+                                        scales: {
+                                            xAxes: [{
+                                                stacked: true
+                                            }],
+                                            yAxes: [{
+                                                stacked: true
+                                            }]
+                                        },
+                                        responsive: false,
+                                        maintainAspectRatio: false,
+                                        onClick: handlefeatureChartClick,
+                                    }
+                                };
+        chartConfig = chartBarCofgin
+
+        return '<div><canvas id="featuresChart"></canvas>'+
+                featuresSentences(featuresInfo,id)+'</div>'
+    }
+
+    function featuresSentences(featuresInfo,id) {
+        var html = '<div id="featuresSentences">'
+        for (index in featuresInfo.featureOrder) {
+            name = featuresInfo.featureInfo[featuresInfo.featureOrder[index]].name;
+            featureHtml = '<div id="'+name+'" style="display:none" class="featuresInfo">';
+            var numberOfAllSentences = featuresInfo.frequencyOfMentions[featuresInfo.featureOrder[index]].positive +
+                                       featuresInfo.frequencyOfMentions[featuresInfo.featureOrder[index]].negative +
+                                       featuresInfo.frequencyOfMentions[featuresInfo.featureOrder[index]].neutral
+            var numberOfAllSentencesInRestaurent = featuresInfo.featureInfo[featuresInfo.featureOrder[index]].positive +
+                                                   featuresInfo.featureInfo[featuresInfo.featureOrder[index]].negative +
+                                                   featuresInfo.featureInfo[featuresInfo.featureOrder[index]].neutral
+            var numberOfPositiveInPhoenix = featuresInfo.frequencyOfMentions[featuresInfo.featureOrder[index]].positive;
+            var numberOfNegativeInPhoenix = featuresInfo.frequencyOfMentions[featuresInfo.featureOrder[index]].negative;
+            var numberOfPositiveInRestaurent = featuresInfo.featureInfo[featuresInfo.featureOrder[index]].positive
+            var numberOfNegativeInRestaurent = featuresInfo.featureInfo[featuresInfo.featureOrder[index]].negative
+            var percentPositiveInPhoenix =  numberOfPositiveInPhoenix * 100 / numberOfAllSentences;
+            var percentNegativeInPhoenix =  numberOfNegativeInPhoenix * 100 / numberOfAllSentences;
+            var percentPositive =  numberOfPositiveInRestaurent * 100 / numberOfAllSentencesInRestaurent;
+            var percentNegative =  numberOfNegativeInRestaurent * 100 / numberOfAllSentencesInRestaurent;
+
+            var pmsg  = '<div>Positive sentences of "'+ name +'" '+percentPositive.toFixed(2) +'% '+numberOfPositiveInRestaurent+'' +
+                ' ; In Phoenix '+percentPositiveInPhoenix.toFixed(2) +'%  '+ numberOfPositiveInPhoenix+'.</div>';
+            var nmsg = '<div>Negative sentences of "'+ name +'" '+percentNegative.toFixed(2)+'% '+numberOfNegativeInRestaurent+'' +
+                ' ; In Phoenix '+percentPositiveInPhoenix.toFixed(2) +'%  '+ numberOfNegativeInPhoenix+'.</div>';
+            featureHtml += pmsg + nmsg;
+                for (sentenceIndex in featuresInfo.featureInfo[featuresInfo.featureOrder[index]].sentences) {
+                    var sentence = featuresInfo.featureInfo[featuresInfo.featureOrder[index]].sentences[sentenceIndex];
+                    var sentenceHtml = '<div reviewId="'+sentence.reviewId+'" class="'+getColorClassByPolarity(sentence.polarity)+'">'+sentence.text+'</div>';
+                    featureHtml += sentenceHtml
+                }
+            featureHtml += '</div>';
+            html += featureHtml;
+        }
+        html+= '</div>'
+        return html
+    }
+
+    function handlefeatureChartClick(evt){
+        var activeElement = featuresChart.getElementAtEvent(evt);
+        var a = chartConfig;
+        if (activeElement.length > 0){
+
+            $('#featuresSentences .featuresInfo').hide();
+
+            var name = chart_config.data.labels[activeElement[0]._index]
+            if (name != undefined){
+                $('#featuresSentences #'+name).show();
+            }
+        }
+    }
+
+    function initFeatureChartBar() {
+        initChar(chartConfig, 'featuresChart', '#generalInfo')
+    }
+
+    function initChar(chartBarCofgin, chartBarPlaceHtmlholder, divId){
+
+         var ctx = document.getElementById(chartBarPlaceHtmlholder).getContext("2d");
+         var dw = $(divId).width();
+         var dh = $(divId).height()*0.8;
+         ctx.canvas.width=dw;
+         ctx.canvas.height= dh;
+         featuresChart = new Chart(ctx,chartBarCofgin);
+         return featuresChart
+    }
+
 
     function createSenteces(sentence) {
         var sentenceHtml = '<div class="sentence ' + getColorClassByPolarity(sentence.polarity) + ' ' + getClassByPolarity(sentence.polarity) + '">';
@@ -218,17 +356,8 @@ function GetHtmlGeneratorHelper () {
         var dialogNav = '  <ul class="nav nav-tabs" ><li class="active">'
             + '<a data-toggle="tab" href="#generalInfo">Information</a>'
             + '</li>'
-            + '<li >'
-            + '    <a data-toggle="tab" href="#itemReviews">Reviews</a>'
-            + '</li>'
             + '<li>'
-            + '    <a data-toggle="tab" href="#itemFeatures">Features</a>'
-            + '</li>'
-            /*  + '<li>'
-             + '    <a data-toggle="tab" href="#similar">Similar </a>'
-             + '</li>'*/
-            + '<li>'
-            + '    <button type="button" class="btn btn-default navbar-btn" onclick="htmlManager.htmlGenerator.addRestaurantToCompareList('+parameters+');">Add to Comper List</button>'
+            + '    <a data-toggle="tab" href="#itemFeatures" onclick="htmlcontroller.initFeatureChartBar()">Features</a>'
             + '</li>'
             + '</ul>';
         $('#dialogNav').html(dialogNav);
@@ -369,27 +498,27 @@ function GetHtmlGeneratorHelper () {
 
         var reviewsHtml = '';
         var generalInfo = '<div id="generalInfo" class="tab-pane fade in active">';
-        var itemReviews = '<div id="itemReviews" class="tab-pane fade" style="height:80%;">';
+        //var itemReviews = '<div id="itemReviews" class="tab-pane fade" style="height:80%;">';
         var features = '<div id="itemFeatures" class="tab-pane fade">';
-        var similar = '<div id="similar" class="tab-pane fade">';
-
-        if (details.reviews.constructor === Array) {
+        /*   if (details.reviews.constructor === Array) {
             var i = 0;
             for (i = 0; i < details.reviews.length; i++) {
                 itemReviews += createReview(details.reviews[i])
             }
-            generalInfo = generalInfo +createRestaurantInfo(details.restaurantInfo[id])+'</div>';
-            itemReviews =  itemReviews + '</div>';
-            features = features + createFeatures(id, details.features, details.reviews) + '</div>';
-            similar = similar + '</div>';//$('#similar').html('<div class="container-fluid">' + createSimilarItems(id,details.similarItems) + '</div>');
-
-            reviewsHtml = generalInfo + itemReviews + features + similar
-            LoadRestaurantDialogNav(id, details.restaurantInfo[id][1]);
-            $('#dialogContent').html(reviewsHtml);
-            $('#infoDataMain').modal('toggle');
-            $('#infoDataMain').modal('show');
-            $('#infoDataMain').css('z-index','1100');
         }
+        itemReviews =  itemReviews + '</div>';
+        features = features + createFeatures(id, details.features, details.reviews) + '</div>';
+*/
+        generalInfo = generalInfo +createRestaurantInfo(details.restaurantInfo[id])+'</div>';
+        features += createFeaturesInfo(details.featuresInfo,id ) + '</div>';
+
+        reviewsHtml = generalInfo + features;
+        LoadRestaurantDialogNav(id, details.restaurantInfo[id][1]);
+        $('#dialogContent').html(reviewsHtml);
+        $('#infoDataMain').modal('toggle');
+        $('#infoDataMain').modal('show');
+        $('#infoDataMain').css('z-index','1100');
+
     }
 
     return {
@@ -403,6 +532,8 @@ function GetHtmlGeneratorHelper () {
         cleanRestaurantToCompareList:cleanRestaurantToCompareList,
         showRestaurantDetails:showRestaurantDetails,
         showFeatureDetails:showFeatureDetails,
+        initFeatureChartBar:initFeatureChartBar,
+
     };
 
 }
