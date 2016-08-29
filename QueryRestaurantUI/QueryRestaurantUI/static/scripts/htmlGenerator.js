@@ -434,12 +434,46 @@ function GetHtmlGeneratorHelper () {
 
     function createRestaurantInfo(restaurantInfo) {
         var infoHtml = '';
-        infoHtml = '<h2>'+restaurantInfo[1]+'</h2>'
-        infoHtml +='<img src="/static/__9lry0Yu5ExNpy0WtZ1bQ.jpg" alt="Smiley face" width="300" height="200">'
-        infoHtml +='<img src="/static/_1t3f89fFrAsFHmDkku9zg.jpg" alt="Smiley face" width="300" height="200">'
-        infoHtml +='<img src="/static/__8oTHle-LCw-oeA6Ui1mw.jpg" alt="Smiley face" width="300" height="200">'
-        infoHtml +='<img src="/static/_2lLdkazezco-tDvhDKDLQ.jpg" alt="Smiley face" width="300" height="200">'
+        infoHtml = '<h2>'+restaurantInfo.name+' ('+ restaurantInfo.stars +')</h2>'
+
+        infoHtml += carouselHtml('photos',restaurantInfo.photos)
+        //restaurantInfo.hours
+        //full_address
         return infoHtml;
+    }
+
+    function carouselHtml(name,itemsArr) {
+        var html = '<div id="' + name + '" class="carousel slide" data-ride="carousel">'
+        html += '<ol class="carousel-indicators">'
+        for (index in itemsArr) {
+            var liClass = '';
+            if (index == 0) {
+                liClass = 'class="active"';
+            }
+            html += '<li data-target="#' + name + '" data-slide-to="' + index + '"' + liClass + ' ></li>';
+        }
+         html += '</ol>';
+        html += '<div class="carousel-inner" role="listbox">'
+
+        for (index in itemsArr) {
+            var liClass = '';
+            if (index == 0) {
+                liClass = ' active';
+            }
+            html += '<div class="item' + liClass + '" ><img src="/static/images/' + itemsArr[index] + '">    </div>';
+        }
+        html += ' </div>' +
+            '<!-- Left and right controls -->'+
+        '<a class="left carousel-control" href="#' + name + '" role="button" data-slide="prev">' +
+        '<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>' +
+        '<span class="sr-only">Previous</span>' +
+        '</a>' +
+        '<a class="right carousel-control" href="#' + name + '" role="button" data-slide="next">' +
+        '<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>' +
+        '<span class="sr-only">Next</span>' +
+        '</a>' +
+        '</div>'
+        return html;
     }
 
     function createFeatureInfo(info) {
@@ -523,11 +557,11 @@ function GetHtmlGeneratorHelper () {
         itemReviews =  itemReviews + '</div>';
         features = features + createFeatures(id, details.features, details.reviews) + '</div>';
 */
-        generalInfo = generalInfo +createRestaurantInfo(details.restaurantInfo[id])+'</div>';
+        generalInfo = generalInfo +createRestaurantInfo(details.restaurantInfo)+'</div>';
         features += createFeaturesInfo(details.featuresInfo,id ) + '</div>';
 
         reviewsHtml = generalInfo + features;
-        LoadRestaurantDialogNav(id, details.restaurantInfo[id][1]);
+        LoadRestaurantDialogNav(id, details.restaurantInfo.name);
         $('#dialogContent').html(reviewsHtml);
         $('#infoDataMain').modal('toggle');
         $('#infoDataMain').modal('show');
