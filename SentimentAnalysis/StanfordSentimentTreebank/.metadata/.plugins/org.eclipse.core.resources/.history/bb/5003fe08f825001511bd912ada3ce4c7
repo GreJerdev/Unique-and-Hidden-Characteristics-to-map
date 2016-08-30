@@ -1,0 +1,36 @@
+
+package Default;
+
+import java.io.*;
+import java.net.*;
+
+
+public class Main {
+	
+	protected static StanfordCoreNLPSentiment m_StanfordCoreNLPSentiment;
+	static String clientSentence;  
+	static String capitalizedSentence;
+	static ServerSocket welcomeSocket = null;
+	public static void main(String[] args) throws IOException {
+		
+		m_StanfordCoreNLPSentiment = new StanfordCoreNLPSentiment();
+		welcomeSocket = new ServerSocket(6789);
+		
+    	while(true) { 
+    		Socket connectionSocket = welcomeSocket.accept();
+        	BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+        	DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream()); 
+	    	clientSentence = inFromClient.readLine();          
+	    	System.out.println("Received: " + clientSentence);  
+	    	String message = m_StanfordCoreNLPSentiment.ProccessData(clientSentence);
+	    	String messageSize = Integer.toString(message.length()); 
+	    	outToClient.writeBytes(messageSize+"|"+message);
+	    	outToClient.flush();
+    	}
+	
+	 		
+	}
+	
+	
+
+}

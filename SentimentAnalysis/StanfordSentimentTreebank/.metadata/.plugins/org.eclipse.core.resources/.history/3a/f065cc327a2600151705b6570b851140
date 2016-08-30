@@ -1,0 +1,54 @@
+
+package Default;
+
+import java.io.*;
+import java.net.*;
+import java.nio.ByteBuffer;
+
+
+public class Main {
+	
+	protected static StanfordCoreNLPSentiment m_StanfordCoreNLPSentiment;
+	static String clientSentence;  
+	static String capitalizedSentence;
+	static ServerSocket welcomeSocket = null;
+	public static void main(String[] args) throws IOException {
+		
+		m_StanfordCoreNLPSentiment = new StanfordCoreNLPSentiment();
+		welcomeSocket = new ServerSocket(6789);
+		
+    	while(true) { 
+    		try
+    		{
+    			ByteBuffer bf = ByteBuffer.allocate(300000);
+	    		Socket connectionSocket = welcomeSocket.accept();
+	        	BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+	        	DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream()); 
+	        	System.out.println("Before Receiving data");  
+	        	while (true) {
+	                int b = inFromClient.read();
+	                if (b == -1) {
+	                    break;
+	                }
+	                bf.put( (byte) b);
+	            }
+	        	//clientSentence = inFromClient.readLine();          
+	        	clientSentence = new String(bf.array());
+	        	System.out.println("Received: " + clientSentence);  
+		    	String message = m_StanfordCoreNLPSentiment.ProccessData(clientSentence);
+		    	String messageSize = Integer.toString(message.length()); 
+		    	outToClient.writeBytes(messageSize+"|"+message);
+		    	outToClient.flush();
+    		}
+    		catch(Exception ex)
+    		{
+    			
+    		}
+		}
+	
+	 		
+	}
+	
+	
+
+}
