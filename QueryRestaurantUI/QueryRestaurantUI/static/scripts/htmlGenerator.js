@@ -4,6 +4,20 @@ function GetHtmlGeneratorHelper () {
     var restaurantToCompare = [];
     var chartConfig = undefined;
     var featuresChart = undefined;
+
+    var _marked_features = [];
+
+    function setMarkFeatures( features) {
+        _marked_features = [];
+        selectedFeatures =  features.split(",")
+        for (index in selectedFeatures) {
+            try {
+                _marked_features.push(parseInt(selectedFeatures[index]));
+            } catch (err) {
+            }
+        }
+    }
+
     function arrayToString(array) {
         var result = '';
         result = array.join(',');
@@ -68,7 +82,7 @@ function GetHtmlGeneratorHelper () {
             negative.push(featuresInfo.featureInfo[featuresInfo.featureOrder[index]].negative);
             neutral.push(featuresInfo.featureInfo[featuresInfo.featureOrder[index]].neutral);
             alpha = '0.2';
-            if (featuresInfo.featureOrder[index] in [1,2,3,4,5,6,7]){
+            if(  $.inArray(featuresInfo.featureOrder[index],_marked_features)> -1){
                 alpha = '1'
             }
 
@@ -78,49 +92,49 @@ function GetHtmlGeneratorHelper () {
         }
         var datasets = [] ;
         datasets.push({
-						label: 'Negative',
-						fillColor: '#7BC225',
-						data: negative ,
-						backgroundColor:colorForNegative
-					});
+            label: 'Negative',
+            fillColor: '#7BC225',
+            data: negative ,
+            backgroundColor:colorForNegative
+        });
         datasets.push({
-						label: 'Neutral',
-						fillColor: '#7BC225',
-						data: neutral ,
-						backgroundColor:colorForNeutral
-					});
+            label: 'Neutral',
+            fillColor: '#7BC225',
+            data: neutral ,
+            backgroundColor:colorForNeutral
+        });
         datasets.push({
-						label: 'Positive',
-						fillColor: '#7BC225',
-						data: positive ,
-						backgroundColor:colorForPositive
-					});
+            label: 'Positive',
+            fillColor: '#7BC225',
+            data: positive ,
+            backgroundColor:colorForPositive
+        });
         return {datasets:datasets,labels:featurelabelsOrder};
     }
 
     function createFeaturesInfo(featuresInfo,id) {
         var chartBarData = createBarChartData(featuresInfo,id);
         var chartBarCofgin = chart_config = {
-                                    type: "bar",
-                                    data: chartBarData,
-                                    options: {
-                                        scales: {
-                                            xAxes: [{
-                                                stacked: true
-                                            }],
-                                            yAxes: [{
-                                                stacked: true
-                                            }]
-                                        },
-                                        responsive: false,
-                                        maintainAspectRatio: false,
-                                        onClick: handlefeatureChartClick,
-                                    }
-                                };
+            type: "bar",
+            data: chartBarData,
+            options: {
+                scales: {
+                    xAxes: [{
+                        stacked: true
+                    }],
+                    yAxes: [{
+                        stacked: true
+                    }]
+                },
+                responsive: false,
+                maintainAspectRatio: false,
+                onClick: handlefeatureChartClick,
+            }
+        };
         chartConfig = chartBarCofgin
 
         return '<div><canvas id="featuresChart"></canvas>'+
-                featuresSentences(featuresInfo,id)+'</div>'
+            featuresSentences(featuresInfo,id)+'</div>'
     }
 
     function featuresSentences(featuresInfo,id) {
@@ -129,11 +143,11 @@ function GetHtmlGeneratorHelper () {
             name = featuresInfo.featureInfo[featuresInfo.featureOrder[index]].name;
             featureHtml = '<div id="'+name+'" style="display:none" class="featuresInfo"><table class="table">';
             var numberOfAllSentences = featuresInfo.frequencyOfMentions[featuresInfo.featureOrder[index]].positive +
-                                       featuresInfo.frequencyOfMentions[featuresInfo.featureOrder[index]].negative +
-                                       featuresInfo.frequencyOfMentions[featuresInfo.featureOrder[index]].neutral
+                featuresInfo.frequencyOfMentions[featuresInfo.featureOrder[index]].negative +
+                featuresInfo.frequencyOfMentions[featuresInfo.featureOrder[index]].neutral
             var numberOfAllSentencesInRestaurent = featuresInfo.featureInfo[featuresInfo.featureOrder[index]].positive +
-                                                   featuresInfo.featureInfo[featuresInfo.featureOrder[index]].negative +
-                                                   featuresInfo.featureInfo[featuresInfo.featureOrder[index]].neutral
+                featuresInfo.featureInfo[featuresInfo.featureOrder[index]].negative +
+                featuresInfo.featureInfo[featuresInfo.featureOrder[index]].neutral
             var numberOfPositiveInPhoenix = featuresInfo.frequencyOfMentions[featuresInfo.featureOrder[index]].positive;
             var numberOfNegativeInPhoenix = featuresInfo.frequencyOfMentions[featuresInfo.featureOrder[index]].negative;
             var numberOfPositiveInRestaurent = featuresInfo.featureInfo[featuresInfo.featureOrder[index]].positive
@@ -194,13 +208,13 @@ function GetHtmlGeneratorHelper () {
 
     function initChar(chartBarCofgin, chartBarPlaceHtmlholder, divId){
 
-         var ctx = document.getElementById(chartBarPlaceHtmlholder).getContext("2d");
-         var dw = $(divId).width();
-         var dh = $(divId).height()*0.8;
-         ctx.canvas.width=dw;
-         ctx.canvas.height= dh;
-         featuresChart = new Chart(ctx,chartBarCofgin);
-         return featuresChart
+        var ctx = document.getElementById(chartBarPlaceHtmlholder).getContext("2d");
+        var dw = $(divId).width();
+        var dh = $(divId).height()*0.8;
+        ctx.canvas.width=dw;
+        ctx.canvas.height= dh;
+        featuresChart = new Chart(ctx,chartBarCofgin);
+        return featuresChart
     }
 
 
@@ -397,9 +411,9 @@ function GetHtmlGeneratorHelper () {
     function updateComperList(){
         var restaurantToCompareHtml = ''
         for(restaurant in restaurantToCompare){
-         restaurantToCompareHtml += '<button type="button" class="btn btn-default navbar-btn" onclick="#">'+restaurantToCompare[restaurant].name+'</button>';
+            restaurantToCompareHtml += '<button type="button" class="btn btn-default navbar-btn" onclick="#">'+restaurantToCompare[restaurant].name+'</button>';
         }
-         $('#restaurantsToCompare').html(restaurantToCompareHtml);
+        $('#restaurantsToCompare').html(restaurantToCompareHtml);
     }
 
     function addRestaurantToCompareList(itemId, name) {
@@ -437,9 +451,153 @@ function GetHtmlGeneratorHelper () {
         infoHtml = '<h2>'+restaurantInfo.name+' ('+ restaurantInfo.stars +')</h2>'
 
         infoHtml += carouselHtml('photos',restaurantInfo.photos)
+        infoHtml += restaurantProperties(restaurantInfo);
         //restaurantInfo.hours
         //full_address
         return infoHtml;
+    }
+
+    function getRestaurantfullAddress(restaurentInfo) {
+        var html = ''
+        if (restaurentInfo["full_address"] != undefined){
+            html =   '	<div class="panel panel-default">'+
+                '		<div class="panel-heading">'+
+                '			<h4 class="panel-title">'+
+                '				<a data-toggle="collapse" data-parent="#accordion" href="#address">Address</a>'+
+                '			</h4>'+
+                '		</div>'+
+                '		<div id="address" class="panel-collapse collapse in">'+
+                '			<div class="panel-body">'+restaurentInfo["full_address"]+'</div>'+
+                '		</div>'+
+                '	    </div>';
+        }
+        return html;
+    }
+
+    function getRestaurantOpenHours(restaurantInfo){
+        var html = '';
+        if (restaurantInfo["hours"] != undefined){
+            var weekDaysOrder = ["Monday", "Tuesday","Wednesday","Thursday","Friday",  "Saturday","Sunday"];
+            var openhoursHtml = '<div>'
+            hours = restaurantInfo["hours"];
+            for (index in weekDaysOrder){
+
+                if(hours[weekDaysOrder[index]] != undefined){
+                    openhoursHtml += '<div>' + weekDaysOrder[index]+':' +
+                        hours[weekDaysOrder[index]]['open']+'-'+ hours[weekDaysOrder[index]]['close']+'</div>'
+                }
+            }
+            openhoursHtml += '</div>'
+
+            html =   '	<div class="panel panel-default">'+
+                '		<div class="panel-heading">'+
+                '			<h4 class="panel-title">'+
+                '				<a data-toggle="collapse" data-parent="#accordion" href="#openHours">Open hours</a>'+
+                '			</h4>'+
+                '		</div>'+
+                '		<div id="openHours" class="panel-collapse collapse">'+
+                '			<div class="panel-body">'+openhoursHtml+'</div>'+
+                '		</div>'+
+                '	    </div>';
+        }
+        return html;
+    }
+
+    function getRestaurantCategories(categories){
+        var html = '';
+        if (categories != undefined){
+
+            var categoriesHtml = '<div>'
+            for (index in categories){
+
+                if(categories[index] != undefined){
+                    categoriesHtml += '#'+categories[index] + ' ';
+                }
+            }
+            categoriesHtml += '</div>'
+
+            html =   '	<div class="panel panel-default">'+
+                '		<div class="panel-heading">'+
+                '			<h4 class="panel-title">'+
+                '				<a data-toggle="collapse" data-parent="#accordion" href="#categories">Categories</a>'+
+                '			</h4>'+
+                '		</div>'+
+                '		<div id="categories" class="panel-collapse collapse">'+
+                '			<div class="panel-body">'+categoriesHtml+'</div>'+
+                '		</div>'+
+                '	    </div>';
+        }
+        return html;
+    }
+
+    function getRestaurantAttributes(attributes){
+        var html = '';
+        if (attributes != undefined){
+            var attributesHtml = '<div>'
+            for (index in attributes){
+                if(attributes[index] != undefined){
+                    var html = '';
+                    var propertyName = attributes[index];
+                    if ( typeof(attributes[index]) == 'string'){
+                        html='<div>'+index+': '+propertyName.replace(/_/g, ' ')+'</div>';
+                    }
+                    if ( typeof(attributes[index]) == 'boolean' && attributes[index] == true){
+                        html='<div>'+index+'</div>';
+                    }
+                    var typeName = typeof(attributes[index])
+
+                    if ( typeof(attributes[index]) == 'object') {
+                        var trueList = '';
+                        html = '<div>' + index +':';
+                        for (subIndex in propertyName) {
+                            if (propertyName[subIndex] == true){
+                                trueList += ' ' +  subIndex;
+                            }
+                        }
+                        html = '<div>' + index +':' + trueList+'</div>' ;
+                    }
+                    if ( 'Price Range' == index){
+                        var priceRange = ' under $10'
+                        if (attributes[index]==2){
+                            priceRange = '$11-$30'
+                        }
+                        if (attributes[index]==3){
+                            priceRange = '$31-$60'
+                        }
+                        if (attributes[index]>=2){
+                            priceRange = 'bove $61'
+                        }
+                        html='<div>'+index+': '+priceRange+'</div>';
+                    }
+                }
+                attributesHtml += html;
+            }
+
+            attributesHtml += '</div>'
+
+            html =   '	<div class="panel panel-default">'+
+                '		<div class="panel-heading">'+
+                '			<h4 class="panel-title">'+
+                '				<a data-toggle="collapse" data-parent="#accordion" href="#attributes">Attributes</a>'+
+                '			</h4>'+
+                '		</div>'+
+                '		<div id="attributes" class="panel-collapse collapse">'+
+                '			<div class="panel-body">'+attributesHtml+'</div>'+
+                '		</div>'+
+                '	    </div>';
+        }
+        return html;
+    }
+
+    function restaurantProperties(restaurantInfo)
+    {
+        var html = '<div class="panel-group" id="accordion">'+
+            getRestaurantfullAddress(restaurantInfo)+
+            getRestaurantOpenHours(restaurantInfo) +
+            getRestaurantCategories(restaurantInfo["categories"])+
+            getRestaurantAttributes(restaurantInfo["attributes"])+
+            '</div>'
+        return html;
     }
 
     function carouselHtml(name,itemsArr) {
@@ -452,7 +610,7 @@ function GetHtmlGeneratorHelper () {
             }
             html += '<li data-target="#' + name + '" data-slide-to="' + index + '"' + liClass + ' ></li>';
         }
-         html += '</ol>';
+        html += '</ol>';
         html += '<div class="carousel-inner" role="listbox">'
 
         for (index in itemsArr) {
@@ -464,15 +622,15 @@ function GetHtmlGeneratorHelper () {
         }
         html += ' </div>' +
             '<!-- Left and right controls -->'+
-        '<a class="left carousel-control" href="#' + name + '" role="button" data-slide="prev">' +
-        '<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>' +
-        '<span class="sr-only">Previous</span>' +
-        '</a>' +
-        '<a class="right carousel-control" href="#' + name + '" role="button" data-slide="next">' +
-        '<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>' +
-        '<span class="sr-only">Next</span>' +
-        '</a>' +
-        '</div>'
+            '<a class="left carousel-control" href="#' + name + '" role="button" data-slide="prev">' +
+            '<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>' +
+            '<span class="sr-only">Previous</span>' +
+            '</a>' +
+            '<a class="right carousel-control" href="#' + name + '" role="button" data-slide="next">' +
+            '<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>' +
+            '<span class="sr-only">Next</span>' +
+            '</a>' +
+            '</div>'
         return html;
     }
 
@@ -491,12 +649,12 @@ function GetHtmlGeneratorHelper () {
     function createFeatureRestaurantsInfo(restaurantsInfoArr,itemSentementArr ) {
         var infoHtml = '<div>';
         var headline = '<div class="row">' +
-              '<div class="col-md-4"><h3>Restaurant Name</h3></div>' +
-              '<div class="col-md-4"><h3>Feature Polarite</h3></div>' +
-              '<div class="col-md-4"></div>' +
-              '</div>';
+            '<div class="col-md-4"><h3>Restaurant Name</h3></div>' +
+            '<div class="col-md-4"><h3>Feature Polarite</h3></div>' +
+            '<div class="col-md-4"></div>' +
+            '</div>';
         infoHtml += headline;
-         for (restaurantId in restaurantsInfoArr) {
+        for (restaurantId in restaurantsInfoArr) {
             var row = '<div class="row '+ getColorClassByPolarity(itemSentementArr[restaurantId])+'">';
             var rowData = '<div class="col-md-4">'+restaurantsInfoArr[restaurantId][1]+'</div>';
             rowData += '<div class="col-md-4">'+getClassByPolarity(itemSentementArr[restaurantId])+'</div>';
@@ -549,14 +707,14 @@ function GetHtmlGeneratorHelper () {
         //var itemReviews = '<div id="itemReviews" class="tab-pane fade" style="height:80%;">';
         var features = '<div id="itemFeatures" class="tab-pane fade">';
         /*   if (details.reviews.constructor === Array) {
-            var i = 0;
-            for (i = 0; i < details.reviews.length; i++) {
-                itemReviews += createReview(details.reviews[i])
-            }
-        }
-        itemReviews =  itemReviews + '</div>';
-        features = features + createFeatures(id, details.features, details.reviews) + '</div>';
-*/
+         var i = 0;
+         for (i = 0; i < details.reviews.length; i++) {
+         itemReviews += createReview(details.reviews[i])
+         }
+         }
+         itemReviews =  itemReviews + '</div>';
+         features = features + createFeatures(id, details.features, details.reviews) + '</div>';
+         */
         generalInfo = generalInfo +createRestaurantInfo(details.restaurantInfo)+'</div>';
         features += createFeaturesInfo(details.featuresInfo,id ) + '</div>';
 
@@ -581,6 +739,7 @@ function GetHtmlGeneratorHelper () {
         showRestaurantDetails:showRestaurantDetails,
         showFeatureDetails:showFeatureDetails,
         initFeatureChartBar:initFeatureChartBar,
+        setMarkFeatures:setMarkFeatures,
 
     };
 

@@ -272,6 +272,7 @@ function CreateMapHalper (htmlcontroller) {
                             markers[m].setIcon('http://maps.google.com/mapfiles/ms/micons/red-dot.png')
                         }
                     }
+                    htmlcontroller.setMarkFeatures(features)
                 }
             });
         }
