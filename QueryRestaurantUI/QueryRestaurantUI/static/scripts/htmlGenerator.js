@@ -31,7 +31,7 @@ function GetHtmlGeneratorHelper () {
         var polarityClass = 'neutral';
         if (polarity > 0) {
             polarityClass = 'positive'
-        } else {
+        } else if (polarity < 0) {
             polarityClass = 'negative'
         }
         return polarityClass
@@ -166,7 +166,7 @@ function GetHtmlGeneratorHelper () {
             var pmsg  = '<tr> <td colspan="4"><div class="bg-info">Positive sentences of "'+ name +'" '+percentPositive.toFixed(2) +'% '+numberOfPositiveInRestaurent+'' +
                 ' ; In Phoenix '+percentPositiveInPhoenix.toFixed(2) +'%  '+ numberOfPositiveInPhoenix+'.</td> </tr></div>';
             var nmsg = '<tr> <td colspan="4"><div class="bg-info">Negative sentences of "'+ name +'" '+percentNegative.toFixed(2)+'% '+numberOfNegativeInRestaurent+'' +
-                ' ; In Phoenix '+percentPositiveInPhoenix.toFixed(2) +'%  '+ numberOfNegativeInPhoenix+'.</td> </tr></div>';
+                ' ; In Phoenix '+percentNegativeInPhoenix.toFixed(2) +'%  '+ numberOfNegativeInPhoenix+'.</td> </tr></div>';
             featureHtml += headLine + pmsg + nmsg;
 
             for (sentenceIndex in featuresInfo.featureInfo[featuresInfo.featureOrder[index]].positivePreview) {
@@ -399,9 +399,6 @@ function GetHtmlGeneratorHelper () {
             + '    <a data-toggle="tab" href="#restaurants">Restaurants</a>'
             + '</li>'
             + '<li>'
-            + '    <a data-toggle="tab" href="#reviews">Reviews</a>'
-            + '</li>'
-            + '<li>'
             + '    <a data-toggle="tab" href="#sentences">Sentences</a>'
             + '</li>'
             + '</ul>';
@@ -442,6 +439,7 @@ function GetHtmlGeneratorHelper () {
         var selector = '.alert .alert-' + type + ' #text';
         $('#messgeHeader').val(headLine);
         $('#messageBody').val(headLine);
+        $('#infoDataMain').modal('toggle');
         $('#messageBox').modal('toggle');
         $('#messageBox').modal('show');
     }
@@ -618,7 +616,7 @@ function GetHtmlGeneratorHelper () {
             if (index == 0) {
                 liClass = ' active';
             }
-            html += '<div class="item' + liClass + '" ><img src="/static/images/' + itemsArr[index] + '">    </div>';
+            html += '<div class="item' + liClass + '" ><img src="http://dilixo.net/UniqueHiddenCharacteristics/static/images/' + itemsArr[index] + '">    </div>';
         }
         html += ' </div>' +
             '<!-- Left and right controls -->'+
@@ -656,10 +654,11 @@ function GetHtmlGeneratorHelper () {
         infoHtml += headline;
         for (restaurantId in restaurantsInfoArr) {
             var row = '<div class="row '+ getColorClassByPolarity(itemSentementArr[restaurantId])+'">';
-            var rowData = '<div class="col-md-4">'+restaurantsInfoArr[restaurantId][1]+'</div>';
+            var rowData = '<div class="col-md-4">'+restaurantsInfoArr[restaurantId][2]+'</div>';
             rowData += '<div class="col-md-4">'+getClassByPolarity(itemSentementArr[restaurantId])+'</div>';
             rowData += '<div class="col-md-4">' +
-                '<button type="button" class="btn btn-default navbar-btn" onclick="htmlManager.htmlGenerator.addRestaurantToCompareList('+restaurantId+',\''+restaurantsInfoArr[restaurantId][1]+'\');">Add to Comper List</button>' +
+                '<button type="button" class="btn btn-default navbar-btn" ' +
+                'onclick="MainControl.GoogleMapHelper.showItemDetails('+restaurantId+');">Show Restaurant</button>' +
                 '</div>';
             row += rowData;
             row += '</div>';
@@ -674,28 +673,20 @@ function GetHtmlGeneratorHelper () {
         var reviewsHtml = '';
         var generalInfo = '<div id="featuresGeneralInfo" class="tab-pane fade in active">';
         var restaurants = '<div id="restaurants" class="tab-pane fade">';
-        var reviews = '<div id="reviews" class="tab-pane fade">';
         var sentences = '<div id="sentences" class="tab-pane fade">';
 
-        for (restaurant in details.reviews) {
-            reviews += '<div>'+details.items[restaurant][1]+'</div>';
-            for (review in details.reviews[restaurant].reviews){
-                reviews += createReview(details.reviews[restaurant].reviews[review])
-            }
-        }
         generalInfo = generalInfo +createFeatureInfo(details.info)+'</div>';
         restaurants += createFeatureRestaurantsInfo(details.items,details.info.itemSentement)+'</div>';
-        reviews += '</div>';
 
         for (restaurant in details.reviews) {
             sentences += getFeatureSentences(featureId, details.reviews[restaurant].reviews)
         }
         sentences += '</div>';
 
-        reviewsHtml = generalInfo + restaurants + reviews + sentences
+        reviewsHtml = generalInfo + restaurants + sentences
         LoadFeatureDialogNav();
         $('#featureDialogContent').html(reviewsHtml);
-        $('#infoFeature').modal('toggle');
+
         $('#infoFeature').modal('show');
         $('#infoFeature').css('z-index','1101');
     }
@@ -721,7 +712,8 @@ function GetHtmlGeneratorHelper () {
         reviewsHtml = generalInfo + features;
         LoadRestaurantDialogNav(id, details.restaurantInfo.name);
         $('#dialogContent').html(reviewsHtml);
-        $('#infoDataMain').modal('toggle');
+        $('#infoDataMain').modal('hide');
+        $('#messageBox').modal('hide');
         $('#infoDataMain').modal('show');
         $('#infoDataMain').css('z-index','1100');
 

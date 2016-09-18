@@ -2,6 +2,8 @@ function CreateFeatureHelper(mapHalper,htmlGenerator){
     var _mapHalper = mapHalper;
     var _htmlGenerator = htmlGenerator;
     function getAllFeatures (onSucess) {
+        $('#infoDataMain').modal('hide');
+        $('#infoFeature').modal('hide');
         $.ajax({
             type: "GET",
             url: 'allfeatures',
@@ -23,21 +25,25 @@ function CreateFeatureHelper(mapHalper,htmlGenerator){
     }
     
     function getItemsByFeatures (featuresArr) {
+        $('#infoDataMain').modal('hide');
+        $('#infoFeature').modal('hide');
         $.ajax({
             type: "GET",
             url: 'searchitemsbyfeatures?features='+featuresArr,
             data: {},
             success: function (results) {
-                _mapHalper.AddFeatures(results);
+                _mapHalper.AddFeatures(results, true);
                 markers = {};
                 markers.items = {}
                 markers.items.items = results.items;
-                _mapHalper.AddMarkers(markers)
+                _mapHalper.AddMarkersYello(markers)
             }
         });
     }
 
     function getFeatureInfo (featureId) {
+      $('#infoDataMain').modal('hide');
+        $('#infoFeature').modal('hide');
         $.ajax({
             type: "GET",
             url: 'getfeatureinfo',

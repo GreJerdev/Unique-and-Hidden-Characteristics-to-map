@@ -18,7 +18,7 @@ def getItemsNearMe():
        lon = request.args.get('lon', '')
        distance = request.args.get('distance', '')
        args = '?lat={0}&lon={1}&distance={2}'.format(lat,lon,distance)
-       url = getEngineUrl()+"/getitems"+args
+       url = getEngineUrl()+"/querygetitems"+args
        itemsInStrArr = urllib2.urlopen(url).read()
        items = ast.literal_eval(itemsInStrArr)
     except:
@@ -34,7 +34,7 @@ def getFeatureNearMe():
        lon = request.args.get('lon', '')
        distance = request.args.get('distance', '')
        args = '?lat={0}&lon={1}&distance={2}'.format(lat,lon,distance)
-       url = getEngineUrl()+"/getfeatures"+args
+       url = getEngineUrl()+"/querygetfeatures"+args
        featuresInStrArr = urllib2.urlopen(url).read()
        features = ast.literal_eval(featuresInStrArr)
     except:

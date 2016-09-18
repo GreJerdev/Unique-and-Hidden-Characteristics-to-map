@@ -6,9 +6,10 @@ from flask import request
 import urllib2
 import ast
 
-serverUrl = '127.0.0.1'  
-port = '5000'
+serverUrl = 'dilixo.net'
+postfix = 'UniqueHiddenCharacteristics'
+port = '80'
 protocol = 'http'
 
 def getEngineUrl():
-    return '{0}://{1}:{2}'.format(protocol,serverUrl,port)
+    return '{0}://{1}:{2}/{3}'.format(protocol,serverUrl,port,postfix)

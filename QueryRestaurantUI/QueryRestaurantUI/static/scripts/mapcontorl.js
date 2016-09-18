@@ -146,14 +146,18 @@ function CreateMapHalper (htmlcontroller) {
         map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerOfSearchControlDiv);
     }
 
-    function addMarker(loc, text, id) {
+    function addMarker(loc, text, id,color) {
         var infowindow = new google.maps.InfoWindow({
             content: text
         });
+        picUrl = 'http://maps.google.com/mapfiles/ms/micons/red-dot.png'
+        if (color == 'Yello'){
+            picUrl = 'http://maps.google.com/mapfiles/ms/micons/yellow-dot.png'
+        }
         var marker = new google.maps.Marker({
             position: loc,
             map: map,
-            Icon: 'http://maps.google.com/mapfiles/ms/micons/red-dot.png',
+            Icon: picUrl,
             title: text,
             item: id
         });
@@ -175,6 +179,8 @@ function CreateMapHalper (htmlcontroller) {
     }
 
     function showItemDetails(id) {
+        $('#infoDataMain').modal('hide');
+        $('#infoFeature').modal('hide');
         $.ajax({
             type: "GET",
             url: 'getitem',
@@ -256,6 +262,8 @@ function CreateMapHalper (htmlcontroller) {
         if (selectedFeatures.length > 0) {
             features = arrayToString(selectedFeatures);
             items = arrayToString(itemsArr);
+            $('#infoDataMain').modal('hide');
+            $('#infoFeature').modal('hide');
             $.ajax({
                 type: "GET",
                 url: "getitemswithfeatures",
@@ -279,6 +287,8 @@ function CreateMapHalper (htmlcontroller) {
     }
 
     function updateFeaturePanel(featureUrl, data) {
+        $('#infoDataMain').modal('hide');
+        $('#infoFeature').modal('hide');
         $.ajax({
             type: "GET",
             url: featureUrl,
@@ -297,7 +307,19 @@ function CreateMapHalper (htmlcontroller) {
 
     }
 
+    function AddMarkersYello (markers) {
+        deleteMarkers();
+        selectedFeatures = [];
+        markers.items.items.forEach(function (point) {
+            var loc = {lat: parseFloat(point.lat), lng: parseFloat(point.lng)};
+            MainControl.GoogleMapHelper.addMarker(loc, point.Name, point.id, 'Yello');
+        })
+
+    }
+
     function updateMapsItems(itemUrl, data) {
+        $('#infoDataMain').modal('hide');
+        $('#infoFeature').modal('hide');
         $.ajax({
             type: "GET",
             url: itemUrl,
@@ -306,10 +328,17 @@ function CreateMapHalper (htmlcontroller) {
         });
     }
 
-    function AddFeatures(results) {
+    function AddFeatures(results, selected) {
         var text = '';
+        var btnclass = 'default';
+        if (selected == true)
+        {
+            btnclass = 'info';
+        }
         for (i = 0; i < results.features.length; i++) {
-            text += '<button type="button" class="btn btn-default" feature="' + results.features[i][1] + '" onclick="MainControl.GoogleMapHelper.featureClick(' + results.features[i][1] + ')">' + results.features[i][0] + '(' + results.features[i][2] + ')' + '</button>'
+            text += '<button type="button" class="btn btn-'+btnclass+'" feature="' + results.features[i][1] +
+                '" onclick="MainControl.GoogleMapHelper.featureClick(' + results.features[i][1] + ')">'
+                + results.features[i][0] + '(' + results.features[i][2] + ')' + '</button>'
         }
         $('#homeInfo').html(text);
         text = '';
@@ -346,6 +375,7 @@ function CreateMapHalper (htmlcontroller) {
     return {
         initMap: initMap,
         addMarker: addMarker,
+        AddMarkersYello:AddMarkersYello,
         isInit: isInit,
         featureClick: featureClick,
         ShowAll: showAll,
@@ -356,7 +386,8 @@ function CreateMapHalper (htmlcontroller) {
         updateFeaturePanel:updateFeaturePanel,
         updateMapsItems:updateMapsItems,
         AddFeatures:AddFeatures,
-        AddMarkers:AddMarkers
+        AddMarkers:AddMarkers,
+        showItemDetails:showItemDetails
     };
 };
 

@@ -11,18 +11,18 @@ app = Flask(__name__)
 query = None
 
 
-@app.route("/getallfeatures",methods=['GET'])
+@app.route("/querygetallfeatures",methods=['GET'])
 def GetAllFeatures():
     responce = str(query.GetAllFeatures())
     return  responce
 
-@app.route("/getallitems",methods=['GET'])
+@app.route("/querygetallitems",methods=['GET'])
 def GetAllItems():
     items = query.GetAllItems()
     responce = jsonify({'items':items})
     return  responce
 
-@app.route("/getfeatures",methods=['GET'])
+@app.route("/querygetfeatures",methods=['GET'])
 def GetFeatures():
     p = type('point', (object,), {}) 
     p.dis = 2
@@ -42,14 +42,14 @@ def GetFeatures():
     responce = str(query.GetFeature(p))
     return  responce
 
-@app.route("/getfeatureinfo",methods=['GET'])
+@app.route("/querygetfeatureinfo",methods=['GET'])
 def GetFeatureInfo():
     featureId = request.args.get('featureId', '')
     responce = str(query.GetFeatureInfo(featureId))
     return  responce
 
 
-@app.route("/getfeaturesbyitemsid",methods=['GET'])
+@app.route("/querygetfeaturesbyitemsid",methods=['GET'])
 def GetFeatureByItemsId():
     itemsStr = request.args.get('items', '')
     itemsArr = itemsStr.split(',')    
@@ -59,7 +59,7 @@ def GetFeatureByItemsId():
     return  responce
 
     
-@app.route("/getitems",methods=['GET'])
+@app.route("/querygetitems",methods=['GET'])
 def GetItems():
     p = type('point', (object,), {}) 
     p.dis = 2
@@ -83,7 +83,7 @@ def GetItems():
     return  responce
 
 
-@app.route("/getfeaturebyitemid",methods=["GET"])
+@app.route("/querygetfeaturebyitemid",methods=["GET"])
 def GetFeatureByItemId():
     itemId = request.args.get('id', '')
     try:
@@ -95,7 +95,7 @@ def GetFeatureByItemId():
     return str(responce)
 
 
-@app.route("/getsimilaritems",methods=['GET'])
+@app.route("/querygetsimilaritems",methods=['GET'])
 def GetSimilarItems():
     itemid = request.args.get('id', '')
     try:
@@ -107,7 +107,7 @@ def GetSimilarItems():
         #print "END OF ERROR"
     return  responce
 
-@app.route("/getitemsidbyfeaturelist",methods=['GET'])
+@app.route("/querygetitemsidbyfeaturelist",methods=['GET'])
 def GetItemsIdByFeatureList( ):
     featureList = request.args.get('featurelist', '')
     try:
@@ -120,7 +120,7 @@ def GetItemsIdByFeatureList( ):
         #print "END OF ERROR"
     return  responce
 
-@app.route("/comperbetweenitems",methods=['GET'])
+@app.route("/querycomperbetweenitems",methods=['GET'])
 def ComperBetweenItems():
     itemsIdList = request.args.get('itemsIdList', '')
     try:
@@ -131,7 +131,7 @@ def ComperBetweenItems():
         #print "END OF ERROR"
     return  responce
 
-@app.route("/getitemreviewsidbyitemid",methods=['GET'])
+@app.route("/querygetitemreviewsidbyitemid",methods=['GET'])
 def GetItemReviewsIdByItemId():
     itemid = request.args.get('itemId', '')
     try:
@@ -142,7 +142,7 @@ def GetItemReviewsIdByItemId():
         #print "END OF ERROR"
     return  responce
 
-@app.route("/getfeaturepolarityinitemreviews",methods=['GET'])
+@app.route("/querygetfeaturepolarityinitemreviews",methods=['GET'])
 def GetFeaturePolarityInItemReviews():
     featureId = request.args.get('featureId', '')
     itemId = request.args.get('itemId', '')
@@ -155,7 +155,7 @@ def GetFeaturePolarityInItemReviews():
         print "END OF ERROR"
     return str(responce)
 
-@app.route("/getfeaturepolarityinreviews",methods=['GET'])
+@app.route("/querygetfeaturepolarityinreviews",methods=['GET'])
 def GetFeaturePolarityInReviews():
     featureId = request.args.get('featureId', '')
     reviewId = request.args.get('reviewId', '')
@@ -168,7 +168,7 @@ def GetFeaturePolarityInReviews():
         #print "END OF ERROR"
     return  responce
 
-@app.route("/getfeaturepolarityglobal",methods=['GET'])
+@app.route("/querygetfeaturepolarityglobal",methods=['GET'])
 def GetFeaturePolarityGlobal():
     featureId = request.args.get('featureId', '')
     try:
@@ -180,7 +180,7 @@ def GetFeaturePolarityGlobal():
         #print "END OF ERROR"
     return  responce
 
-@app.route("/getreviewstextbyitemIdandfeatureIds",methods=['GET'])
+@app.route("/querygetreviewstextbyitemIdandfeatureIds",methods=['GET'])
 def GetReviewsTextByItemIdAndFeatureIds(itemId, featureIdsList):
     itemid = request.args.get('itemId', '')
     featureIdsList = request.args.get('featureIdsList', '')
@@ -193,7 +193,7 @@ def GetReviewsTextByItemIdAndFeatureIds(itemId, featureIdsList):
         #print "END OF ERROR"
     return  responce
 
-@app.route("/getreviewstextbyfeatureIds",methods=['GET'])
+@app.route("/querygetreviewstextbyfeatureIds",methods=['GET'])
 def GetReviewsTextByFeatureIds():
     featureIds = request.args.get('featureIdsList', '')
     featureIdsList = featureIds.split(',')
@@ -208,7 +208,7 @@ def GetReviewsTextByFeatureIds():
         #print "END OF ERROR"
     return  responce
 
-@app.route('/getitemswithfeatures', methods=['GET', 'POST'])
+@app.route('/querygetitemswithfeatures', methods=['GET', 'POST'])
 def getItemsWithFeatures():
     try:     
         itemsStr = request.args.get('items', '')
@@ -224,7 +224,7 @@ def getItemsWithFeatures():
         print e  
     return responce
 
-@app.route('/getreviewsentencesbyid', methods=['GET', 'POST'])
+@app.route('/querygetreviewsentencesbyid', methods=['GET', 'POST'])
 def GetReviewSentencesById():
     id = request.args.get('id', '')
     result = {}
@@ -232,7 +232,7 @@ def GetReviewSentencesById():
         result = query.GetItemsWithFeatures(id)
     return str(result)
 
-@app.route('/getreviewsentencesbyitemid', methods=['GET', 'POST'])
+@app.route('/querygetreviewsentencesbyitemid', methods=['GET', 'POST'])
 def GetReviewsTextByItemId():
     id = request.args.get('id', '')
     result = {}
@@ -241,7 +241,7 @@ def GetReviewsTextByItemId():
         result = query.GetReviewsTextByItemId(id)
     return str(result)
 
-@app.route('/searchitemsbyfeatures', methods=['GET'])
+@app.route('/querysearchitemsbyfeatures', methods=['GET'])
 def SearchItemsByFeatures():
     featuresStr = request.args.get('features', '')
     features = featuresStr.strip(',').split(',')
@@ -249,7 +249,7 @@ def SearchItemsByFeatures():
     return str(result)
 
 
-@app.route('/getitemfeaturesandfeaturesentencesbyitemid')
+@app.route('/querygetitemfeaturesandfeaturesentencesbyitemid')
 def GetItemFeaturesAndFeatureSentencesByItemId():
     responce = {}    
     try: 

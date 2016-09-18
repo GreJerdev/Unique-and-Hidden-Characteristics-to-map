@@ -5,4 +5,5 @@ from SoureDataManager import FactorySoureDataManager
 configXml = GetConfiguraton(None)
 
 sourceDBProvider = FactorySoureDataManager.GetSourceDataManager(configXml)
+susDBProvider = FactorySoureDataManager.GetSUSDataManager(configXml)
 

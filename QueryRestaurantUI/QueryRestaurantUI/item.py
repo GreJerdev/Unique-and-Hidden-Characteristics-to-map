@@ -10,10 +10,12 @@ from QueryRestaurantUI import app
 from connector import getEngineUrl
 from DBHelper import sourceDBProvider
 
+import time
+
 @app.route('/allpoints')
 def GetAllItems():
     try:
-        url = getEngineUrl() + "/getallitems"
+        url = getEngineUrl() + "/querygetallitems"
 
         itemsInStrArr = urllib2.urlopen(url).read()
         items = ast.literal_eval(itemsInStrArr)
@@ -27,7 +29,7 @@ def GetReviewSentencesById():
     try:
        id = request.args.get('id', '')
        args = '?id={0}'.format(id)
-       url = getEngineUrl()+"/getreviewsentencesbyid"+args
+       url = getEngineUrl()+"/querygetreviewsentencesbyid"+args
        itemsInStrArr = urllib2.urlopen(url).read()
        items = ast.literal_eval(itemsInStrArr)
     except:
@@ -41,7 +43,7 @@ def GetReviewsTextByItemId():
         
         id = request.args.get('id', '')
         args = '?id={0}'.format(id)
-        url = getEngineUrl()+"/getreviewsentencesbyitemid"+args
+        url = getEngineUrl()+"/querygetreviewsentencesbyitemid"+args
         print url
         itemsInStrArr = urllib2.urlopen(url).read()
         print len(itemsInStrArr)
@@ -54,14 +56,18 @@ def GetReviewsTextByItemId():
 @app.route('/getitem',methods=['GET', 'POST'])
 def GetItem():
     result = {}
+    start_time = time.time()
+
     try:
         id = request.args.get('id', '')
         args = '?id={0}'.format(id)
-        url = getEngineUrl() + "/getitemfeaturesandfeaturesentencesbyitemid" + args
+        url = getEngineUrl() + "/querygetitemfeaturesandfeaturesentencesbyitemid" + args
         print url
         featuresInfo = {}
         featuresInfo = ast.literal_eval(urllib2.urlopen(url).read())
+        print("---getitemfeaturesandfeaturesentencesbyitemid %s seconds ---" % (time.time() - start_time))
         item = sourceDBProvider.GetRestaurantInfo([id])
+        print("---GetRestaurantInfo %s seconds ---" % (time.time() - start_time))
         result['restaurantInfo'] = {}
         result['restaurantInfo']['id'] = item[0][0][0]
         result['restaurantInfo']['city'] = item[0][0][1]
