@@ -2,22 +2,22 @@
 {% block body %}
 
 
-<div class="row row-max-height" style="height: 100%;z-index:-10;">
+<div class="row" style="height: 80%;z-index:-10;">
     <div class="col-md-9" style="height: 100%;">
         <div id="map"></div>
     </div>
-    <div class="col-md-3" id="info" style="height:100%;">
+    <div class="col-md-3" id="info" style="height:95%;">
         <ul class="nav nav-tabs">
             <li class="active">
                 <a data-toggle="tab" href="#homeInfo">Select Features</a>
             </li>
-            <li>
+         <!--   <li>
                 <a data-toggle="tab" href="#features">Features</a>
-            </li>
+            </li>-->
         </ul>
 
-        <div class="tab-content" style="overflow-y:scroll;height:80%;">
-            <div id="homeInfo" class="tab-pane fade in active" style="height:80%;">
+        <div class="tab-content" style="height:100%;">
+            <div id="homeInfo" class="tab-pane fade in active" style="overflow-y:scroll;height:100%;">
 
             </div>
             <div id="features" class="tab-pane fade">
@@ -61,11 +61,14 @@
 
         $(function () {
             var featuresList = FeatureHelper.featureManager.getAllFeatures(setFeatures);}) ;
-
+    function init() {
+        MainControl.GoogleMapHelper.initMap();
+        MainControl.GoogleMapHelper.ShowAll();
+    }
 
     </script>
 
-    <script src="https://maps.googleapis.com/maps/api/js?libraries=geometry&sensor=false&callback=MainControl.GoogleMapHelper.initMap"
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=geometry&sensor=false&callback=init"
             async defer>
 
     </script>

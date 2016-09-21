@@ -161,8 +161,10 @@ function GetHtmlGeneratorHelper () {
             var headLine =  '<tr class="'+getColorClassByPolarity(polarity)+'">' +
                 '<td><span class="featureName">'+name+'</span></td>' +
                 '<td class="featureProperty">Feature polarity</span></td>' + '<td class="featureProperty">' + getClassByPolarity(polarity)+'</span></td>' +
-                '<td><button type="button"class="btn" onclick="  $(\'#featuresSentences .featuresInfo\').hide();">hide</button></td>' +
+                '<td><button type="button"class="btn" onclick="$(\'#featuresSentences.featuresInfo\').hide();">hide</button></td>' +
+                '<td><button type="button"class="btn" onclick="FeatureHelper.featureManager.getFeatureInfo('+featuresInfo.featureOrder[index]+');">Feature Global</button></td>' +
                 '</tr>'
+
             var pmsg  = '<tr> <td colspan="4"><div class="bg-info">Positive sentences of "'+ name +'" '+percentPositive.toFixed(2) +'% '+numberOfPositiveInRestaurent+'' +
                 ' ; In Phoenix '+percentPositiveInPhoenix.toFixed(2) +'%  '+ numberOfPositiveInPhoenix+'.</td> </tr></div>';
             var nmsg = '<tr> <td colspan="4"><div class="bg-info">Negative sentences of "'+ name +'" '+percentNegative.toFixed(2)+'% '+numberOfNegativeInRestaurent+'' +
@@ -398,9 +400,9 @@ function GetHtmlGeneratorHelper () {
             + '<li >'
             + '    <a data-toggle="tab" href="#restaurants">Restaurants</a>'
             + '</li>'
-            + '<li>'
+           /* + '<li>'
             + '    <a data-toggle="tab" href="#sentences">Sentences</a>'
-            + '</li>'
+            + '</li>'*/
             + '</ul>';
         $('#featureDialogNav').html(dialogNav);
     }
@@ -673,16 +675,18 @@ function GetHtmlGeneratorHelper () {
         var reviewsHtml = '';
         var generalInfo = '<div id="featuresGeneralInfo" class="tab-pane fade in active">';
         var restaurants = '<div id="restaurants" class="tab-pane fade">';
-        var sentences = '<div id="sentences" class="tab-pane fade">';
+        var sentences = '';
 
         generalInfo = generalInfo +createFeatureInfo(details.info)+'</div>';
         restaurants += createFeatureRestaurantsInfo(details.items,details.info.itemSentement)+'</div>';
 
+        /*
+        sentences = '<div id="sentences" class="tab-pane fade">';
         for (restaurant in details.reviews) {
             sentences += getFeatureSentences(featureId, details.reviews[restaurant].reviews)
         }
         sentences += '</div>';
-
+        */
         reviewsHtml = generalInfo + restaurants + sentences
         LoadFeatureDialogNav();
         $('#featureDialogContent').html(reviewsHtml);

@@ -37,7 +37,9 @@ function CreateMapHalper (htmlcontroller) {
         controlText.style.lineHeight = '38px';
         controlText.style.paddingLeft = '5px';
         controlText.style.paddingRight = '5px';
-        controlText.innerHTML = 'Click Here for Map Search';
+        controlText.innerHTML = 'Search';
+        controlText.id = 'mapSearchButton';
+
         controlUI.appendChild(controlText);
 
         // Setup the click event listeners: simply set the map to Chicago.
@@ -109,7 +111,7 @@ function CreateMapHalper (htmlcontroller) {
 
     function FinishSelectingSearchArea() {
         controlUI.style.backgroundColor = 'rgb(225,0,0)';
-        controlText.innerHTML = 'Click Here for Map Search';
+        controlText.innerHTML = 'Search';
         searchOnMap = false;
         centerOfSearchSelected == false
     }
@@ -346,6 +348,24 @@ function CreateMapHalper (htmlcontroller) {
             text += '<button type="button" class="btn btn-default" feature="' + results.features[i][1] + '" onclick="FeatureHelper.featureManager.getFeatureInfo(' + results.features[i][1] + ')">' + results.features[i][0] + '(' + results.features[i][2] + ')' + '</button>'
         }
         $('#features').html(text);
+
+
+
+        setTimeout(function () {
+			$('#homeInfo').popover({ content: "Click on feature for select restaurants on map (see Legend)", animation: false, placement:"left"});
+			$('#homeInfo').popover('show');
+			setTimeout(function () {
+				$('#homeInfo').popover('destroy');
+			},10000);
+		}, 1000);
+
+        if  (selected == true) {
+            for (i = 0; i < results.features.length; i++) {
+                selectedFeatures.push(results.features[i][1]);
+                $('button[feature="' + results.features[i][1] + '"]').removeClass('btn-default').addClass('btn-info');
+            }
+            markRestaurantsBySelectedFeatures();
+        }
 
     }
     function ShowItems(data, itemUrl, featureUrl) {

@@ -32,11 +32,11 @@ function CreateFeatureHelper(mapHalper,htmlGenerator){
             url: 'searchitemsbyfeatures?features='+featuresArr,
             data: {},
             success: function (results) {
-                _mapHalper.AddFeatures(results, true);
                 markers = {};
                 markers.items = {}
                 markers.items.items = results.items;
                 _mapHalper.AddMarkersYello(markers)
+                _mapHalper.AddFeatures(results, true);
             }
         });
     }
