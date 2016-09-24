@@ -37,7 +37,7 @@ function CreateMapHalper (htmlcontroller) {
         controlText.style.lineHeight = '38px';
         controlText.style.paddingLeft = '5px';
         controlText.style.paddingRight = '5px';
-        controlText.innerHTML = 'Search';
+        controlText.innerHTML = 'Click for map search';
         controlText.id = 'mapSearchButton';
 
         controlUI.appendChild(controlText);
@@ -111,20 +111,20 @@ function CreateMapHalper (htmlcontroller) {
 
     function FinishSelectingSearchArea() {
         controlUI.style.backgroundColor = 'rgb(225,0,0)';
-        controlText.innerHTML = 'Search';
+        controlText.innerHTML = 'Click for map search';
         searchOnMap = false;
         centerOfSearchSelected == false
     }
 
     function SelelctradiusOfSearchArea() {
         controlUI.style.backgroundColor = 'rgb(0,225,0)';
-        controlText.innerHTML = 'Select on Map Radius of Search Area';
+        controlText.innerHTML = 'Click for select search radius';
     }
 
     function StartSelectingSearchArea() {
 
         controlUI.style.backgroundColor = 'rgb(255,255,51)';
-        controlText.innerHTML = 'Select on Map Center of Search Area';
+        controlText.innerHTML = 'Click for select center of search area';
         centerOfSearchSelected == false;
         searchOnMap = true;
         clearMarkers();
@@ -261,7 +261,7 @@ function CreateMapHalper (htmlcontroller) {
             itemsArr.push(markers[m].item);
         }
 
-        if (selectedFeatures.length > 0) {
+       // if (selectedFeatures.length > 0) {
             features = arrayToString(selectedFeatures);
             items = arrayToString(itemsArr);
             $('#infoDataMain').modal('hide');
@@ -285,17 +285,22 @@ function CreateMapHalper (htmlcontroller) {
                     htmlcontroller.setMarkFeatures(features)
                 }
             });
-        }
+     //   }
     }
 
-    function updateFeaturePanel(featureUrl, data) {
+    function updateFeaturePanel(featureUrl, data, selectedFeaturesArr) {
         $('#infoDataMain').modal('hide');
         $('#infoFeature').modal('hide');
         $.ajax({
             type: "GET",
             url: featureUrl,
             data: data,
-            success: AddFeatures
+            success: function (result) {
+                if (selectedFeaturesArr == undefined){
+                    selectedFeaturesArr = [];}
+                AddFeatures(result,selectedFeaturesArr);
+                map.setZoom(10);
+            }
         });
     }
 
@@ -330,17 +335,26 @@ function CreateMapHalper (htmlcontroller) {
         });
     }
 
-    function AddFeatures(results, selected) {
+    function AddFeatures(results, selectedFeaturesArr) {
         var text = '';
         var btnclass = 'default';
-        if (selected == true)
-        {
-            btnclass = 'info';
-        }
+        var selectedFeaturesHtml = ''
         for (i = 0; i < results.features.length; i++) {
+
+            if (selectedFeaturesArr != undefined && selectedFeaturesArr.length > 0 && $.inArray(results.features[i][1], selectedFeaturesArr) > -1 ){
+                selectedFeaturesHtml += '<span class="tag">' +
+                    '<span class="remove" role="presentation" " onclick="MainControl.GoogleMapHelper.featureClick(' + results.features[i][1] + ')">×</span> '+ results.features[i][0] +
+                    '</span>'
+                  btnclass = 'info';
+            }
+            else{
+                btnclass = 'default';
+            }
+
             text += '<button type="button" class="btn btn-'+btnclass+'" feature="' + results.features[i][1] +
-                '" onclick="MainControl.GoogleMapHelper.featureClick(' + results.features[i][1] + ')">'
+                '" onclick="MainControl.GoogleMapHelper.featureClick(' + results.features[i][1] + ')" feature-name="'+results.features[i][0]+'">'
                 + results.features[i][0] + '(' + results.features[i][2] + ')' + '</button>'
+
         }
         $('#homeInfo').html(text);
         text = '';
@@ -348,26 +362,25 @@ function CreateMapHalper (htmlcontroller) {
             text += '<button type="button" class="btn btn-default" feature="' + results.features[i][1] + '" onclick="FeatureHelper.featureManager.getFeatureInfo(' + results.features[i][1] + ')">' + results.features[i][0] + '(' + results.features[i][2] + ')' + '</button>'
         }
         $('#features').html(text);
-
+        $('#selectedFeatureList').html('');
+        $('#selectedFeatureList').html(selectedFeaturesHtml);
 
 
         setTimeout(function () {
-			$('#homeInfo').popover({ content: "Click on feature for select restaurants on map (see Legend)", animation: false, placement:"left"});
-			$('#homeInfo').popover('show');
-			setTimeout(function () {
-				$('#homeInfo').popover('destroy');
-			},10000);
-		}, 1000);
+            $('#homeInfo').popover({ content: "Click on feature for select restaurants on map (see Legend)", animation: false, placement:"left"});
+            $('#homeInfo').popover('show');
+            setTimeout(function () {
+                $('#homeInfo').popover('destroy');
+            },10000);
+        }, 1000);
 
-        if  (selected == true) {
-            for (i = 0; i < results.features.length; i++) {
-                selectedFeatures.push(results.features[i][1]);
-                $('button[feature="' + results.features[i][1] + '"]').removeClass('btn-default').addClass('btn-info');
-            }
+        if  (selectedFeaturesArr != undefined && selectedFeaturesArr.length > 0) {
+            selectedFeatures = selectedFeaturesArr;
             markRestaurantsBySelectedFeatures();
         }
 
     }
+
     function ShowItems(data, itemUrl, featureUrl) {
         updateMapsItems(itemUrl, data);
         updateFeaturePanel(featureUrl, data);
@@ -389,6 +402,18 @@ function CreateMapHalper (htmlcontroller) {
             selectedFeatures.push(id);
             $('button[feature="' + id + '"]').removeClass('btn-default').addClass('btn-info');
         }
+        selectedFeatures = selectedFeatures.filter( function (n) {
+            return  n != undefined && n.toString().length > 0
+        });
+        var selectedFeaturesHtml = '';
+        $('#selectedFeatureList').html(selectedFeaturesHtml);
+        for (i = 0; i < selectedFeatures.length; i++){
+            var featureText =  $('button[feature="'+selectedFeatures[i]+'"]').attr('feature-name');
+            selectedFeaturesHtml += '<span class="tag">' +
+                    '<span class="remove" role="presentation" " onclick="MainControl.GoogleMapHelper.featureClick(' + selectedFeatures[i] + ')">×</span> '+ featureText +
+                    '</span>'
+        }
+        $('#selectedFeatureList').html(selectedFeaturesHtml);
         markRestaurantsBySelectedFeatures();
     }
 

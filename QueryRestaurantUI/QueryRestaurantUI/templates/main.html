@@ -2,28 +2,44 @@
 {% block body %}
 
 
-<div class="row" style="height: 80%;z-index:-10;">
+<div class="row" style="height: 100%;z-index:-10;">
     <div class="col-md-9" style="height: 100%;">
         <div id="map"></div>
     </div>
     <div class="col-md-3" id="info" style="height:95%;">
         <ul class="nav nav-tabs">
             <li class="active">
-                <a data-toggle="tab" href="#homeInfo">Select Features</a>
+                <a data-toggle="tab" href="#homeInfo">Available Features</a>
+            </li>
+            <li>
+                <input type="text" id="filterAvailableFeaturesText" placeholder="Filter Features" onkeyup="filterAvailableFeatures()" style="margin-top: 17px">
             </li>
          <!--   <li>
                 <a data-toggle="tab" href="#features">Features</a>
             </li>-->
         </ul>
 
-        <div class="tab-content" style="height:100%;">
+        <div class="tab-content" style="height:45%;">
             <div id="homeInfo" class="tab-pane fade in active" style="overflow-y:scroll;height:100%;">
 
             </div>
-            <div id="features" class="tab-pane fade">
+            <div id="selectedfeatures" class="tab-pane fade">
             </div>
         </div>
+          <ul class="nav nav-tabs">
+            <li class="active">
+                <a data-toggle="tab" href="#selectedFeatureList">Select Features</a>
+            </li>
+        </ul>
+
+        <div class="tab-content" style="height:45%;">
+            <div id="selectedFeatureList" class="tab-pane fade in active" style="overflow-y:scroll;height:100%;">
+
+            </div>
+
+        </div>
     </div>
+
 
 
     <!-- Trigger the modal with a button -->
@@ -55,6 +71,15 @@
 
 
     <script>
+        
+        function filterAvailableFeatures() {
+
+            var text = $('#filterAvailableFeaturesText').val();
+            var searchTest = text.toLowerCase().replace(/\s/g, '');
+            $( "#homeInfo button" ).hide();
+            $( "#homeInfo button:contains('"+searchTest+"')" ).show();
+        }
+
         function setFeatures(featuresArray) {
             $("#featureSearchList").html('').select2({data: featuresArray});
         }
