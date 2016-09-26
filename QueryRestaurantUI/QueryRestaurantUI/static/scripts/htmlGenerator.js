@@ -120,10 +120,18 @@ function GetHtmlGeneratorHelper () {
             options: {
                 scales: {
                     xAxes: [{
-                        stacked: true
+                        stacked: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: "Restaurant's features"
+                        }
                     }],
                     yAxes: [{
-                        stacked: true
+                        stacked: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: "Number of sentences with feature in restaurant reviews"
+                        }
                     }]
                 },
                 responsive: false,
@@ -161,20 +169,31 @@ function GetHtmlGeneratorHelper () {
             var headLine =  '<tr class="'+getColorClassByPolarity(polarity)+'">' +
                 '<td><span class="featureName">'+name+'</span></td>' +
                 '<td class="featureProperty">Feature polarity</span></td>' + '<td class="featureProperty">' + getClassByPolarity(polarity)+'</span></td>' +
-                '<td><button type="button"class="btn" onclick="$(\'#featuresSentences.featuresInfo\').hide();">hide</button></td>' +
-                '<td><button type="button"class="btn" onclick="FeatureHelper.featureManager.getFeatureInfo('+featuresInfo.featureOrder[index]+');">Feature Global</button></td>' +
+                '<td><button type="button"class="btn" onclick="FeatureHelper.featureManager.getFeatureInfo('+featuresInfo.featureOrder[index]+');">Feature Global</button>' +
+                '<span stype="margin-left:5px;"></span>'+
+                '<button type="button"class="btn" style="margin-left: 25px;" onclick="$(\'#featuresSentences.featuresInfo\').hide();">X</button></td>' +
                 '</tr>'
 
-            var pmsg  = '<tr> <td colspan="4"><div class="bg-info">Positive sentences of "'+ name +'" '+percentPositive.toFixed(2) +'% '+numberOfPositiveInRestaurent+'' +
+            var pmsg  = '<tr> <td colspan="4"><h3>Statistic</h3></td> </tr><tr> <td colspan="4"><div class="bg-info">Positive sentences of "'+ name +'" '+percentPositive.toFixed(2) +'% '+numberOfPositiveInRestaurent+'' +
                 ' ; In Phoenix '+percentPositiveInPhoenix.toFixed(2) +'%  '+ numberOfPositiveInPhoenix+'.</td> </tr></div>';
             var nmsg = '<tr> <td colspan="4"><div class="bg-info">Negative sentences of "'+ name +'" '+percentNegative.toFixed(2)+'% '+numberOfNegativeInRestaurent+'' +
                 ' ; In Phoenix '+percentNegativeInPhoenix.toFixed(2) +'%  '+ numberOfNegativeInPhoenix+'.</td> </tr></div>';
             featureHtml += headLine + pmsg + nmsg;
 
+            if (featuresInfo.featureInfo[featuresInfo.featureOrder[index]].positivePreview != undefined && featuresInfo.featureInfo[featuresInfo.featureOrder[index]].positivePreview.length > 0)
+            {
+                featureHtml += '<tr> <td colspan="4"><div><h3>Feature\'s Random Positive Sentences</h3></td> </tr></div>';
+            }
+
             for (sentenceIndex in featuresInfo.featureInfo[featuresInfo.featureOrder[index]].positivePreview) {
                 var sentence = featuresInfo.featureInfo[featuresInfo.featureOrder[index]].positivePreview[sentenceIndex];
                 var sentenceHtml = '<tr> <td colspan="4"><div reviewId="'+sentence.reviewId+'" class="'+getColorClassByPolarity(sentence.polarity)+'">'+sentence.text+'</td> </tr></div>';
                 featureHtml += sentenceHtml
+            }
+
+            if (featuresInfo.featureInfo[featuresInfo.featureOrder[index]].negativePreview != undefined && featuresInfo.featureInfo[featuresInfo.featureOrder[index]].negativePreview.length > 0)
+            {
+                featureHtml += '<tr> <td colspan="4"><div><h3>Feature\'s Random Negative Sentences</h3></td> </tr></div>';
             }
 
             for (sentenceIndex in featuresInfo.featureInfo[featuresInfo.featureOrder[index]].negativePreview) {
@@ -206,6 +225,14 @@ function GetHtmlGeneratorHelper () {
 
     function initFeatureChartBar() {
         initChar(chartConfig, 'featuresChart', '#generalInfo')
+        setTimeout(function () {
+            $('#generalInfo').popover({ content: "Click on the chart bars for more information about feature", animation: false, placement:"bottom"});
+               $('#generalInfo').popover('show');
+            setTimeout(function () {
+                $('#generalInfo').popover('hide');
+                $('#generalInfo').popover('destroy');
+            },10000);
+        },1000);
     }
 
     function initChar(chartBarCofgin, chartBarPlaceHtmlholder, divId){
@@ -213,8 +240,8 @@ function GetHtmlGeneratorHelper () {
         var ctx = document.getElementById(chartBarPlaceHtmlholder).getContext("2d");
         var dw = $(divId).width();
         var dh = $(divId).height()*0.8;
-        ctx.canvas.width=dw;
-        ctx.canvas.height= dh;
+        ctx.canvas.width= dw;
+        ctx.canvas.height= 400;
         featuresChart = new Chart(ctx,chartBarCofgin);
         return featuresChart
     }
@@ -448,7 +475,7 @@ function GetHtmlGeneratorHelper () {
 
     function createRestaurantInfo(restaurantInfo) {
         var infoHtml = '';
-        infoHtml = '<h2>'+restaurantInfo.name+' ('+ restaurantInfo.stars +')</h2>'
+        infoHtml = '<h2>'+restaurantInfo.name+' ('+ restaurantInfo.stars +' stars)</h2>'
 
         infoHtml += carouselHtml('photos',restaurantInfo.photos)
         infoHtml += restaurantProperties(restaurantInfo);

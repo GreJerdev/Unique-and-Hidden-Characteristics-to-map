@@ -20,7 +20,7 @@ function CreateMapHalper (htmlcontroller) {
     function SearchOnMapControl(controlDiv, map) {
 
         // Set CSS for the control border.
-        controlUI.style.backgroundColor = 'rgb(225,0,0)';
+        controlUI.style.backgroundColor = '#6C8AD5';
         controlUI.style.border = '2px solid #fff';
         controlUI.style.borderRadius = '3px';
         controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
@@ -110,7 +110,7 @@ function CreateMapHalper (htmlcontroller) {
     }
 
     function FinishSelectingSearchArea() {
-        controlUI.style.backgroundColor = 'rgb(225,0,0)';
+        controlUI.style.backgroundColor = '#6C8AD5';
         controlText.innerHTML = 'Click for map search';
         searchOnMap = false;
         centerOfSearchSelected == false
@@ -124,7 +124,7 @@ function CreateMapHalper (htmlcontroller) {
     function StartSelectingSearchArea() {
 
         controlUI.style.backgroundColor = 'rgb(255,255,51)';
-        controlText.innerHTML = 'Click for select center of search area';
+        controlText.innerHTML = 'Click to select center of search area';
         centerOfSearchSelected == false;
         searchOnMap = true;
         clearMarkers();
@@ -274,12 +274,15 @@ function CreateMapHalper (htmlcontroller) {
                     for (m in markers) {
                         if (results.items.HaveAllFeatures.indexOf(markers[m].item) > -1) {
                             markers[m].setIcon('http://maps.google.com/mapfiles/ms/micons/green-dot.png')
+                            markers[m].setZIndex(google.maps.Marker.MAX_ZINDEX + 4);
                         }
                         else if (results.items.HavePartOFFeatures.indexOf(markers[m].item) > -1) {
                             markers[m].setIcon('http://maps.google.com/mapfiles/ms/micons/yellow-dot.png')
+                            markers[m].setZIndex(google.maps.Marker.MAX_ZINDEX + 2);
                         }
                         else {
                             markers[m].setIcon('http://maps.google.com/mapfiles/ms/micons/red-dot.png')
+                            markers[m].setZIndex(google.maps.Marker.MAX_ZINDEX);
                         }
                     }
                     htmlcontroller.setMarkFeatures(features)

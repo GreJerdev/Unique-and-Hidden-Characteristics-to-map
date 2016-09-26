@@ -28,62 +28,90 @@
         { height: 10%;
             margin: 0;
             padding: 0;}
+
+
+        .select2-close-mask{
+            z-index: 2099;
+        }
+        .select2-dropdown{
+            z-index: 3051;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            background-color: #000;
+        }
     </style>
     <link rel="stylesheet" href="../static/style.css">
 </head>
 
 <body style="background-color: orange; ">
-<div class="container-fluid" style="background-color: orange;margin-bottom:1px;height:110px;  " >
-    <div class="row">
-        <div class="col-lg-2"></div>
-        <div class="col-lg-8"><h3  >
-        <span id="mainHeadline" data-content="Please use the search box to find your favorite food or atmosphere or click on RED button for search of map" >   Welcome to "To Eat" the best web site to find restaurant in Phoenix</span> </h3></div>
-        <div class="col-lg-2"></div>
-    </div>
 
+<nav class="navbar navbar-default" style="margin-bottom: 5px;">
+    <div class="container-fluid">
 
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
 
+                <li class="dropdown">
+                    <button type="button" class="btn btn-default navbar-btn" aria-label="Left Align" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" title="Show all restaurans on map" onclick="MainControl.GoogleMapHelper.ShowAll()">Show all Restaurants</a></li>
+                        <li><a href="#" title="Search for restaurants" onclick=" $('#searchModel').modal('show');
+                             $('.select2-container--open').css('z-index','1102'); setTimeout(function () {
+                             $('#featureSearchList').popover('show');
+                             setTimeout(function () { $('#featureSearchList').popover('hide'); },10000); }, 1000); ">Search Restaurants By Features</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav">
 
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
+                <li id="mainHeadline" data-content="Please use the search box to find your favorite food or atmosphere or click on RED button for search of map" style="padding-left: 20px; ">
+                    <h3>   Bon Appetit- The best web site to find restaurant in Phoenix</h3>
+                </li>
+                </h3>
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
+            </ul>
+            <!--<ul class="nav navbar-nav">
 
-                    <button type="button" class="btn btn-default navbar-btn" onclick="MainControl.GoogleMapHelper.ShowAll()">Show all</button>
-                    <button type="button" class="btn btn-default navbar-btn" onclick="Clean()">Clean Map</button>
-                </ul>
-                <form class="navbar-form navbar-left">
-                    <div class="form-group">
-                        <select class="searchTextBox" style="width: 300px" id="featureSearchList" multiple="multiple" data-content='You want Pizza or coffe? just enter in search "Pizza" or/and "Coffe" and click Search'
-                                data-placement="top">
-                            <option value="pizza">pizza</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-default" onclick="seach(); return false;">Search</button>
-                </form>
-                <ul class="nav navbar-nav navbar-left">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Legend<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#"><img src="/static/legend.png"></a></li>
-                        </ul>
-                    </li>
-                </ul>
+                      <button type="button" class="btn btn-default navbar-btn" title="Show all restaurans on map" onclick="MainControl.GoogleMapHelper.ShowAll()">Show all</button>
+                     <button type="button" class="btn btn-default navbar-btn" onclick="Clean()">Clean Map</button>
+                  </ul>
+            <form class="navbar-form navbar-left">
+                <div class="form-group">
+                    <select class="searchTextBox" style="width: 300px" id="featureSearchList" multiple="multiple" data-content='You want Pizza or coffe? just enter in search "Pizza" or/and "Coffe" and click Search'
+                            data-placement="top">
+                        <option value="pizza">pizza</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-default" onclick="seach(); return false;">Search</button>
+            </form>-->
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Legend<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#"><img src="/static/legend.png"></a></li>
+                    </ul>
+                </li>
 
-                <ul class="nav navbar-nav navbar-right">
-                    <button type="button" class="btn btn-default navbar-btn" onclick="openSUSTest();">SUS Test</button>
-                    <!--	<button type="button" class="btn btn-default navbar-btn" onclick="openHelp();">Help</button>-->
-                </ul>
-            </div><!-- /.navbar-collapse -->
-        </div><!-- /.container-fluid -->
-        <script>
+                <button type="button" class="btn btn-default navbar-btn" onclick="openSUSTest();">SUS Test</button>
+                <!--	<button type="button" class="btn btn-default navbar-btn" onclick="openHelp();">Help</button>-->
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+    <script>
 
-        </script>
-    </nav>
+    </script>
+</nav>
 
-</div>
 <div class="container-fluid" style="height: 80%" >
 
     {% block body %}
@@ -93,7 +121,7 @@
 
 <div id ="waitDiv" class="modalBackGround"></div>
 <div id="mainPopup"/>
-<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="infoDataMainLargeModalLabel" id="infoDataMain">
+<div class="modal fade bs-example-modal-lg" role="dialog" aria-labelledby="infoDataMainLargeModalLabel" id="infoDataMain">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <span class="close" onclick="$(function () {$('#infoDataMain').modal('toggle');});">x</span>
@@ -106,7 +134,7 @@
 </div>
 
 
-<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="infoDataMainLargeModalLabel" id="helpPopup">
+<div class="modal fade bs-example-modal-lg" role="dialog" aria-labelledby="infoDataMainLargeModalLabel" id="helpPopup">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <span class="close" onclick="$(function () {$('#helpPopup').modal('toggle');$('#helpPopup').modal('hide');});">x</span>
@@ -160,7 +188,34 @@
 </div>
 
 
-<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="infoFeatureLargeModalLabel" id="infoFeature">
+<div class="modal fade" id="searchModel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Search Restaurants by Features</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <select class="searchTextBox" style="width: 300px"
+                            id="featureSearchList" multiple="multiple"
+                            data-content='You want Pizza or coffe? just enter in search "Pizza" or/and "Coffe" and click Search'
+                            data-placement="top">
+                        <option value="pizza"></option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-default" onclick="seach(); return false;">Search</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade bs-example-modal-lg" role="dialog" aria-labelledby="infoFeatureLargeModalLabel" id="infoFeature">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <span class="close" onclick="$(function () {$('#infoFeature').modal('toggle');});">x</span>
@@ -300,25 +355,26 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        $("#featureSearchList").select2();
-        $('#featureSearchList').select2({dropdownAutoWidth : true});
-        $('#mainHeadline').popover({animation:true,delay: { "show": 500, "hide": 100,html:true, placement:"bottom"} }).popover('show')
-        setTimeout(function () {
-            $('#mainHeadline').popover('hide');
-            $('#featureSearchList').popover('show');
-            $('#mapSearchButton').popover({ content: "Click here to select search area", animation: false, placement:"bottom"});
-            $('#mapSearchButton').popover('show');
-            setTimeout(function () {
-                $('#featureSearchList').popover('hide');
-                $('#mapSearchButton').popover('destroy');
-            },10000);
-        }, 10000);
+        $('#mapSearchButton').popover({ content: "Click here to select search area", animation: false, placement:"bottom"});
+        $('#mapSearchButton').popover('show');
+
+        setTimeout(function () { $('#mapSearchButton').popover('destroy');},10000);
+
         $('#SUSrate').css('z-index','1101');
         $('#helpPopup').css('z-index','1101');
+        $('#searchModel').css('z-index','1101');
+
+        $("#featureSearchList").select2({
+            dropdownParent: $("#searchModel"),
+            dropdownAutoWidth : true
+        });
+
     });
     function seach(){
+        Clean();
         var selectedVals = $('#featureSearchList').select2('val');
         FeatureHelper.featureManager.getItemsByFeatures(selectedVals);
+        $('#searchModel').modal('hide');
     }
     $body = $("body");
 
@@ -359,6 +415,7 @@
 
     function Clean() {
         $('#homeInfo').html('');
+        $('#selectedFeatureList').html('');
         MainControl.GoogleMapHelper.cleanMap();
     }
 

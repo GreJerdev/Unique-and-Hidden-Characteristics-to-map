@@ -114,6 +114,11 @@ flex-direction: column;
                 no-repeat;
 }
 
+#info .nav{
+    margin-top: 4px;
+}
+
+
 body.loading {
     overflow: hidden;
 }
