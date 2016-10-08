@@ -1,12 +1,13 @@
 function CreateFeatureHelper(mapHalper,htmlGenerator){
     var _mapHalper = mapHalper;
     var _htmlGenerator = htmlGenerator;
+    var urlprefix = '';
     function getAllFeatures (onSucess) {
         $('#infoDataMain').modal('hide');
         $('#infoFeature').modal('hide');
         $.ajax({
             type: "GET",
-            url: 'allfeatures',
+            url: urlprefix+'allfeatures',
             data: {},
             success: function (results) {
                 var features = [];
@@ -24,12 +25,13 @@ function CreateFeatureHelper(mapHalper,htmlGenerator){
         });
     }
 
-    function getItemsByFeatures (featuresArr) {
+    function getItemsByFeatures (featuresArr,lat,lng,radius) {
         $('#infoDataMain').modal('hide');
         $('#infoFeature').modal('hide');
+        var searchParams = 'features='+featuresArr+'&lat='+lat+'&lng='+lng+'&radius='+radius;
         $.ajax({
             type: "GET",
-            url: 'searchitemsbyfeatures?features='+featuresArr,
+            url: urlprefix+'searchitemsbyfeatures?'+searchParams,
             data: {},
             success: function (results) {
                 markers = {};
@@ -48,7 +50,7 @@ function CreateFeatureHelper(mapHalper,htmlGenerator){
         $('#infoFeature').modal('hide');
         $.ajax({
             type: "GET",
-            url: 'getfeatureinfo',
+            url: urlprefix+'getfeatureinfo',
             data: {featureId:featureId},
             success: function (results) {
                 _htmlGenerator.showFeatureDetails(featureId,results);

@@ -4,7 +4,7 @@ function GetHtmlGeneratorHelper () {
     var restaurantToCompare = [];
     var chartConfig = undefined;
     var featuresChart = undefined;
-
+    var urlprefix = '';
     var _marked_features = [];
 
     function setMarkFeatures( features) {
@@ -227,7 +227,7 @@ function GetHtmlGeneratorHelper () {
         initChar(chartConfig, 'featuresChart', '#generalInfo')
         setTimeout(function () {
             $('#generalInfo').popover({ content: "Click on the chart bars for more information about feature", animation: false, placement:"bottom"});
-               $('#generalInfo').popover('show');
+            $('#generalInfo').popover('show');
             setTimeout(function () {
                 $('#generalInfo').popover('hide');
                 $('#generalInfo').popover('destroy');
@@ -427,9 +427,9 @@ function GetHtmlGeneratorHelper () {
             + '<li >'
             + '    <a data-toggle="tab" href="#restaurants">Restaurants</a>'
             + '</li>'
-           /* + '<li>'
-            + '    <a data-toggle="tab" href="#sentences">Sentences</a>'
-            + '</li>'*/
+            /* + '<li>'
+             + '    <a data-toggle="tab" href="#sentences">Sentences</a>'
+             + '</li>'*/
             + '</ul>';
         $('#featureDialogNav').html(dialogNav);
     }
@@ -708,12 +708,12 @@ function GetHtmlGeneratorHelper () {
         restaurants += createFeatureRestaurantsInfo(details.items,details.info.itemSentement)+'</div>';
 
         /*
-        sentences = '<div id="sentences" class="tab-pane fade">';
-        for (restaurant in details.reviews) {
-            sentences += getFeatureSentences(featureId, details.reviews[restaurant].reviews)
-        }
-        sentences += '</div>';
-        */
+         sentences = '<div id="sentences" class="tab-pane fade">';
+         for (restaurant in details.reviews) {
+         sentences += getFeatureSentences(featureId, details.reviews[restaurant].reviews)
+         }
+         sentences += '</div>';
+         */
         reviewsHtml = generalInfo + restaurants + sentences
         LoadFeatureDialogNav();
         $('#featureDialogContent').html(reviewsHtml);
@@ -750,6 +750,14 @@ function GetHtmlGeneratorHelper () {
 
     }
 
+    function cleanFilter() {
+        $('#filterAvailableFeaturesText').val('');
+    }
+
+    function cleanSearchTextBox(){
+        $('#featureSearchList').select2('val', null);
+        $("select").val(null).trigger("change");
+    }
     return {
         showReviews: showReviews,
         createFeatures: createFeatures,
@@ -763,7 +771,8 @@ function GetHtmlGeneratorHelper () {
         showFeatureDetails:showFeatureDetails,
         initFeatureChartBar:initFeatureChartBar,
         setMarkFeatures:setMarkFeatures,
-
+        cleanFilter:cleanFilter,
+        cleanSearchTextBox:cleanSearchTextBox
     };
 
 }

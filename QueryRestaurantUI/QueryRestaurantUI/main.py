@@ -14,7 +14,8 @@ from DBHelper import susDBProvider
 @app.route('/')
 def index():
     print 'index'
-    return render_template('main.html')
+    prefix = ''
+    return render_template('main.html',prefix = prefix)
 
 
 @app.route('/SusData', methods=['GET', 'POST'])

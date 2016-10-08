@@ -74,6 +74,30 @@ def SearchItemsByFeatures():
        url = getEngineUrl()+"/querysearchitemsbyfeatures"+args
        dataItemAndFeatures = urllib2.urlopen(url).read()
        info = ast.literal_eval(dataItemAndFeatures)
+       areaSearch = True
+       try:
+
+           slat = request.args.get('lat')
+           slng = request.args.get('lng')
+           sradius = request.args.get('radius')
+           flat = float(slat)
+           flng = float(slng)
+           fradius = float(sradius)
+           args = '?lat={0}&lon={1}&distance={2}'.format(flat, flng, fradius/(1.60934*1000))
+           url = getEngineUrl() + "/querygetitems" + args
+           itemsInStrArr = urllib2.urlopen(url).read()
+           items = ast.literal_eval(itemsInStrArr)
+           itemsInSelectedArea = [i['id'] for i in items['items']]
+           itemsWithFeatures = [i['id'] for i in info['items']]
+           merge = list(set(itemsWithFeatures).intersection(itemsInSelectedArea))
+           arr = [];
+           for item in info['items']:
+
+                if item['id']in merge:
+                    arr.append(item)
+           info['items'] = arr
+       except:
+           areaSearch = False
     except:
        e = sys.exc_info()[0]
        print e

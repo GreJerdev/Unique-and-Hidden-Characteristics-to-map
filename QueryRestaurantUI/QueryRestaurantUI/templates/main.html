@@ -3,36 +3,60 @@
 
 
 <div class="row" style="height: 100%;z-index:-10;">
-    <div class="col-md-9" style="height: 100%;">
+    <div class="col-md-9" style="height: 100%;padding-right: 2px;">
         <div id="map"></div>
     </div>
-    <div class="col-md-3" id="info" style="height:95%;">
+    <div class="col-md-3" id="info" style="height:95%; padding-left: 2px;">
         <ul class="nav nav-tabs">
             <li class="active">
-                <a data-toggle="tab" href="#homeInfo" title="List of all restaurants' features, that are displaying on the map.">Available Features</a>
+                <a data-toggle="tab" href="#homeInfo" title="List of all restaurants' features, that are displaying on the map."
+                   style=" padding-bottom:5px;padding-top:5px;bottom:5px;background-color: #FFCF73;">
+                    Highlight Relevant Restaurants By Selecting Tags Below
+                </a>
             </li>
             <li>
-                <input type="text" id="filterAvailableFeaturesText" placeholder="Filter Features" onkeyup="filterAvailableFeatures()" style="margin-top: 17px">
+                <input type="text" id="filterAvailableFeaturesText" placeholder="Filter tags" onkeyup="filterAvailableFeatures()" style="width:140px">
             </li>
-         <!--   <li>
-                <a data-toggle="tab" href="#features">Features</a>
-            </li>-->
+            <li style="margin-left:5px;">
+                <label><input type="radio" name="searchType" value="all" checked="checked">All</label>
+            </li>
+            <li style="margin-left:5px;">
+                <label><input type="radio" name="searchType" value="any">Any</label>
+            </li>
+
+
         </ul>
 
-        <div class="tab-content" style="height:68%;">
+        <div class="tab-content" style="height:38%; margin-bottom:5px">
             <div id="homeInfo" class="tab-pane fade in active" style="overflow-y:scroll;height:100%;">
 
             </div>
             <div id="selectedfeatures" class="tab-pane fade">
             </div>
         </div>
-          <ul class="nav nav-tabs">
+         <div class="tab-content" style="height:125px; margin-bottom:5px">
+            <div class='all'>
+                <img src="http://maps.google.com/mapfiles/ms/micons/red-dot.png"/><span>- The restaurants <b>have does not have any</b> of selected tags</span>
+            </div>
+             <div class='any'>
+                <img src="http://maps.google.com/mapfiles/ms/micons/red-dot.png"/><span>- The restaurants <b> have part or none</b> of selected tags</span>
+            </div>
+            <div class='all'  style="margin-top: 5px;">
+                <img src="http://maps.google.com/mapfiles/ms/micons/yellow-dot.png"/><span>- The restaurants have part of selected tags</span>
+            </div>
+            <div class='all any' style="margin-top: 5px;">
+                <img src="http://maps.google.com/mapfiles/ms/micons/green-dot.png"/><span>- The restaurants have all of selected tags</span>
+            </div>
+
+
+        </div>
+        <ul class="nav nav-tabs">
             <li class="active">
-                <a data-toggle="tab" href="#selectedFeatureList">Select Features</a>
+            <a data-toggle="tab" href="#selectedFeatureList" style=" padding-bottom:5px;padding-top:5px;bottom:5px;margin-top: 5px;background-color: #FFCF73; ">Select Tags</a>
             </li>
         </ul>
 
-        <div class="tab-content" style="height:30%;">
+        <div class="tab-content" style="height:20%; border-color:#FFCF73;">
             <div id="selectedFeatureList" class="tab-pane fade in active" style="overflow-y:scroll;height:100%;">
 
             </div>
@@ -48,30 +72,30 @@
     <!--<div id="messageBox" class="modal fade" role="dialog">
         <div class="modal-dialog">-->
 
-            <!-- Modal content-->
-            <!--<div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title" id="messgeHeader" ></h4>
-                </div>
-                <div class="modal-body" id="messageBody">
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
+    <!-- Modal content-->
+    <!--<div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" id="messgeHeader" ></h4>
+        </div>
+        <div class="modal-body" id="messageBody">
 
         </div>
-    </div>-->
-    <script src="/static/scripts/htmlGenerator.js"></script>
-    <script src="/static/scripts/featureHelper.js"> </script>
-    <script src="/static/scripts/mapcontorl.js"></script>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+
+</div>
+</div>-->
+    <script src="{{prefix}}/static/scripts/htmlGenerator.js"></script>
+    <script src="{{prefix}}/static/scripts/featureHelper.js"> </script>
+    <script src="{{prefix}}/static/scripts/mapcontorl.js"></script>
 
 
 
     <script>
-        
+
         function filterAvailableFeatures() {
 
             var text = $('#filterAvailableFeaturesText').val();
@@ -81,19 +105,43 @@
         }
 
         function setFeatures(featuresArray) {
+            var options = ''
+            for (i = 0; i < featuresArray.length; i++) {
+                options +='<option value="'+featuresArray[i].id+'">'+featuresArray[i].text +'</option>';
+            }
+            $("#featureSearchList").html(options)
+
             $("#featureSearchList").html('').select2({data: featuresArray});
         }
 
         $(function () {
             var featuresList = FeatureHelper.featureManager.getAllFeatures(setFeatures);}) ;
-    function init() {
-        MainControl.GoogleMapHelper.initMap();
-        MainControl.GoogleMapHelper.ShowAll();
-    }
+        function init() {
+            MainControl.GoogleMapHelper.initMap();
+            MainControl.GoogleMapHelper.ShowAll();
+            setSearchMode();
+            $("input[name='searchType']").change(function () {
+                setSearchMode();
+            })
+        }
+
+        function setSearchMode() {
+            var searchType = $('input[name="searchType"]:checked ').val();
+            if (searchType == 'all'){
+              $('.all').hide()
+              $('.any').show();
+            }
+            else{
+                $('.any').hide();
+                $('.all').show();
+            }
+
+            MainControl.GoogleMapHelper.setSearchType(searchType);
+        }
 
     </script>
 
-    <script src="https://maps.googleapis.com/maps/api/js?libraries=geometry&sensor=false&callback=init"
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDXXH1gnlM1FNzHumqzTx1EDbp_hS0OLLo&libraries=geometry&sensor=false&callback=init"
             async defer>
 
     </script>

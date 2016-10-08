@@ -4,8 +4,8 @@
     <title>To Eat</title>
     <meta name="viewport" content="initial-scale=1.0"></meta>
     <meta charset="utf-8"></meta>
-    <link rel="stylesheet" href="/static/style.css"></link>
-    <link rel="stylesheet" href="/static/feature.css"></link>
+    <link rel="stylesheet" href="{{prefix}}/static/style.css"></link>
+    <link rel="stylesheet" href="{{prefix}}/static/feature.css"></link>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.js"></script>
 
@@ -47,10 +47,10 @@
             background-color: #000;
         }
     </style>
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="{{prefix}}/static/style.css">
 </head>
 
-<body style="background-color: orange; ">
+<body style="background-color: #fff2cc; ">
 
 <nav class="navbar navbar-default" style="margin-bottom: 5px;">
     <div class="container-fluid">
@@ -65,44 +65,32 @@
                     </button>
                     <ul class="dropdown-menu">
                         <li><a href="#" title="Show all restaurans on map" onclick="MainControl.GoogleMapHelper.ShowAll()">Show all Restaurants</a></li>
-                        <li><a href="#" title="Search for restaurants" onclick=" $('#searchModel').modal('show');
-                             $('.select2-container--open').css('z-index','1102'); setTimeout(function () {
-                             $('#featureSearchList').popover('show');
-                             setTimeout(function () { $('#featureSearchList').popover('hide'); },10000); }, 1000); ">Search Restaurants By Features</a></li>
                     </ul>
                 </li>
             </ul>
             <ul class="nav navbar-nav">
 
-                <li id="mainHeadline" data-content="Please use the search box to find your favorite food or atmosphere or click on RED button for search of map" style="padding-left: 20px; ">
-                    <h3>   Bon Appetit- The best web site to find restaurant in Phoenix</h3>
+                <li id="mainHeadline" data-content="Please use the search box to find your favorite food or atmosphere or click on RED button for search of map">
+                    <h3 style="
+                          margin-top: 13px;
+                          border-left-width: 20px;
+                          margin-left: 20px;">   Bon Appetit, The best web site to find restaurant in Phoenix</h3>
                 </li>
                 </h3>
 
             </ul>
-            <!--<ul class="nav navbar-nav">
-
-                      <button type="button" class="btn btn-default navbar-btn" title="Show all restaurans on map" onclick="MainControl.GoogleMapHelper.ShowAll()">Show all</button>
-                     <button type="button" class="btn btn-default navbar-btn" onclick="Clean()">Clean Map</button>
-                  </ul>
-            <form class="navbar-form navbar-left">
-                <div class="form-group">
-                    <select class="searchTextBox" style="width: 300px" id="featureSearchList" multiple="multiple" data-content='You want Pizza or coffe? just enter in search "Pizza" or/and "Coffe" and click Search'
-                            data-placement="top">
-                        <option value="pizza">pizza</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-default" onclick="seach(); return false;">Search</button>
-            </form>-->
             <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Legend<span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#"><img src="/static/legend.png"></a></li>
-                    </ul>
-                </li>
+                <button type="button" class="btn btn-default navbar-btn  navbar-right" onclick="openSUSTest();">SUS Test</button>
+                <form class="navbar-form navbar-right">
+                    <div class="form-group">
+                        <select class="searchTextBox" style="width: 300px" id="featureSearchList" multiple="multiple" data-content='You want Pizza or coffe? just enter in search "Pizza" or/and "Coffe" and click Search'
+                                data-placement="top">
+                            <option value="pizza">pizza</option>
+                        </select>
+                    </div>
 
-                <button type="button" class="btn btn-default navbar-btn" onclick="openSUSTest();">SUS Test</button>
+                    <button type="submit" class="btn btn-default glyphicon glyphicon-search" onclick="search(); return false;"></button>
+                </form>
                 <!--	<button type="button" class="btn btn-default navbar-btn" onclick="openHelp();">Help</button>-->
             </ul>
         </div><!-- /.navbar-collapse -->
@@ -112,7 +100,7 @@
     </script>
 </nav>
 
-<div class="container-fluid" style="height: 80%" >
+<div class="container-fluid" style="height: 91%" >
 
     {% block body %}
     {% endblock %}
@@ -202,11 +190,12 @@
                     <select class="searchTextBox" style="width: 300px"
                             id="featureSearchList" multiple="multiple"
                             data-content='You want Pizza or coffe? just enter in search "Pizza" or/and "Coffe" and click Search'
-                            data-placement="top">
+                            data-placement="top"
+                            placeholder="Filter restaurants by tags">
                         <option value="pizza"></option>
                     </select>
                 </div>
-                <button type="button" class="btn btn-default" onclick="seach(); return false;">Search</button>
+                <button type="button" class="btn btn-default glyphicon glyphicon-search" onclick="search(); return false;"></button>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -364,16 +353,29 @@
         $('#helpPopup').css('z-index','1101');
         $('#searchModel').css('z-index','1101');
 
-        $("#featureSearchList").select2({
-            dropdownParent: $("#searchModel"),
-            dropdownAutoWidth : true
+        var select2 = $("#featureSearchList").select2({
+            dropdownAutoWidth : true,
+            placeholder: 'Filter restaurants by tags'
         });
 
+
+
     });
-    function seach(){
-        Clean();
+    function search(){
+        //Clean();
+        var lat = undefined;
+        var lng = undefined
+        var radius = undefined;
         var selectedVals = $('#featureSearchList').select2('val');
-        FeatureHelper.featureManager.getItemsByFeatures(selectedVals);
+        var searchArea = MainControl.GoogleMapHelper.getSearchCircle();
+
+        if (searchArea != null){
+            lat = searchArea.center.lat();
+            lng = searchArea.center.lng();
+            radius = searchArea.radius;
+        }
+        FeatureHelper.featureManager.getItemsByFeatures(selectedVals,lat,lng,radius);
+        htmlcontroller.cleanFilter();
         $('#searchModel').modal('hide');
     }
     $body = $("body");

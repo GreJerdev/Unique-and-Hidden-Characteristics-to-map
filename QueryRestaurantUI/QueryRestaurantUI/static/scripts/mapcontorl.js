@@ -14,8 +14,15 @@ function CreateMapHalper (htmlcontroller) {
     var centerOfSearchSelected = false;
     var centerOfSearchControlDiv = document.createElement('div');
     var centerOfSearchControl;
+    var cancelControlDiv = document.createElement('div');
+    var cancelControl;
+    var searchType = 'all';
     var controlUI = document.createElement('div');
     var controlText = document.createElement('div');
+    var cancelUI = document.createElement('div');
+    var cancelText = document.createElement('div');
+
+    var urlprefix = '';
 
     function SearchOnMapControl(controlDiv, map) {
 
@@ -41,10 +48,33 @@ function CreateMapHalper (htmlcontroller) {
         controlText.id = 'mapSearchButton';
 
         controlUI.appendChild(controlText);
-
-        // Setup the click event listeners: simply set the map to Chicago.
         controlUI.addEventListener('click', StartSelectingSearchArea );
+    }
 
+    function CancelControl(controlDiv, map) {
+         // Set CSS for the control border.
+        cancelUI.style.backgroundColor = '#FFFF73';
+        cancelUI.style.border = '2px solid #fff';
+        cancelUI.style.borderRadius = '3px';
+        cancelUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+        cancelUI.style.cursor = 'pointer';
+        cancelUI.style.marginBottom = '22px';
+        cancelUI.style.textAlign = 'Cancel map search';
+        cancelUI.title = 'Cancel';
+        controlDiv.appendChild(cancelUI);
+
+        // Set CSS for the control interior.
+        cancelText.style.color = 'rgb(25,25,25)';
+        cancelText.style.fontFamily = 'Roboto,Arial,sans-serif';
+        cancelText.style.fontSize = '16px';
+        cancelText.style.lineHeight = '38px';
+        cancelText.style.paddingLeft = '5px';
+        cancelText.style.paddingRight = '5px';
+        cancelText.innerHTML = 'Show Default';
+        cancelText.id = 'mapSearchCancelButton';
+
+        cancelUI.appendChild(cancelText);
+        cancelUI.addEventListener('click', function (){Clean();  showAll();} )
     }
 
     function mouseMove(event) {
@@ -128,6 +158,7 @@ function CreateMapHalper (htmlcontroller) {
         centerOfSearchSelected == false;
         searchOnMap = true;
         clearMarkers();
+        htmlcontroller.cleanSearchTextBox();
         if (searchCircle != undefined) {
             searchCircle.setMap(null);
         }
@@ -138,7 +169,7 @@ function CreateMapHalper (htmlcontroller) {
 
         map = new google.maps.Map(document.getElementById('map'), {
             center: {lat: 33.4664494, lng: -112.0655065},
-            zoom: 12
+            zoom: 10
         });
 
         map.addListener('click', mapOnClick);
@@ -146,6 +177,10 @@ function CreateMapHalper (htmlcontroller) {
         centerOfSearchControl = new SearchOnMapControl(centerOfSearchControlDiv, map);
         centerOfSearchControlDiv.index = 1;
         map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerOfSearchControlDiv);
+
+        cancelControl = new CancelControl(cancelControlDiv, map);
+        cancelControlDiv.index = 1;
+        map.controls[google.maps.ControlPosition.TOP_RIGHT].push(cancelControlDiv);
     }
 
     function addMarker(loc, text, id,color) {
@@ -185,7 +220,7 @@ function CreateMapHalper (htmlcontroller) {
         $('#infoFeature').modal('hide');
         $.ajax({
             type: "GET",
-            url: 'getitem',
+            url: urlprefix+'/getitem',
             data: {id: id},
             success: function (results) {
                 htmlcontroller.showRestaurantDetails(id, results);
@@ -268,7 +303,7 @@ function CreateMapHalper (htmlcontroller) {
             $('#infoFeature').modal('hide');
             $.ajax({
                 type: "GET",
-                url: "getitemswithfeatures",
+                url: urlprefix+"/getitemswithfeatures",
                 data: {items: items, features: features},
                 success: function (results) {
                     for (m in markers) {
@@ -276,7 +311,7 @@ function CreateMapHalper (htmlcontroller) {
                             markers[m].setIcon('http://maps.google.com/mapfiles/ms/micons/green-dot.png')
                             markers[m].setZIndex(google.maps.Marker.MAX_ZINDEX + 4);
                         }
-                        else if (results.items.HavePartOFFeatures.indexOf(markers[m].item) > -1) {
+                        else if (results.items.HavePartOFFeatures.indexOf(markers[m].item) > -1 && searchType != 'all') {
                             markers[m].setIcon('http://maps.google.com/mapfiles/ms/micons/yellow-dot.png')
                             markers[m].setZIndex(google.maps.Marker.MAX_ZINDEX + 2);
                         }
@@ -296,7 +331,7 @@ function CreateMapHalper (htmlcontroller) {
         $('#infoFeature').modal('hide');
         $.ajax({
             type: "GET",
-            url: featureUrl,
+            url: urlprefix+'/'+featureUrl,
             data: data,
             success: function (result) {
                 if (selectedFeaturesArr == undefined){
@@ -332,7 +367,7 @@ function CreateMapHalper (htmlcontroller) {
         $('#infoFeature').modal('hide');
         $.ajax({
             type: "GET",
-            url: itemUrl,
+            url: urlprefix+'/'+itemUrl,
             data: data,
             success:AddMarkers
         });
@@ -370,7 +405,7 @@ function CreateMapHalper (htmlcontroller) {
 
 
         setTimeout(function () {
-            $('#homeInfo').popover({ content: "Click on feature for select restaurants on map (see Legend)", animation: false, placement:"left"});
+            $('#homeInfo').popover({ content: "Click on feature for select restaurants on map", animation: false, placement:"left"});
             $('#homeInfo').popover('show');
             setTimeout(function () {
                 $('#homeInfo').popover('destroy');
@@ -420,6 +455,15 @@ function CreateMapHalper (htmlcontroller) {
         markRestaurantsBySelectedFeatures();
     }
 
+    function setSearchType(sType) {
+        searchType = sType;
+        markRestaurantsBySelectedFeatures();
+    }
+
+    function getSearchCircle() {
+         return searchCircle;
+    }
+
     return {
         initMap: initMap,
         addMarker: addMarker,
@@ -435,7 +479,9 @@ function CreateMapHalper (htmlcontroller) {
         updateMapsItems:updateMapsItems,
         AddFeatures:AddFeatures,
         AddMarkers:AddMarkers,
-        showItemDetails:showItemDetails
+        showItemDetails:showItemDetails,
+        setSearchType:setSearchType,
+        getSearchCircle:getSearchCircle
     };
 };
 
