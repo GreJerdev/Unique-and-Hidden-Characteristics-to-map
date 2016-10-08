@@ -74,7 +74,7 @@ function CreateMapHalper (htmlcontroller) {
         cancelText.id = 'mapSearchCancelButton';
 
         cancelUI.appendChild(cancelText);
-        cancelUI.addEventListener('click', function (){Clean();  showAll();} )
+        cancelUI.addEventListener('click', function (){ htmlcontroller.cleanSearchTextBox(); Clean();  showAll();} )
     }
 
     function mouseMove(event) {

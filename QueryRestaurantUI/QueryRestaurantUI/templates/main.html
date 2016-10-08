@@ -111,7 +111,8 @@
             }
             $("#featureSearchList").html(options)
 
-            $("#featureSearchList").html('').select2({data: featuresArray});
+            $("#featureSearchList").html('').select2({data: featuresArray,   placeholder: 'Filter restaurants by tags'});
+
         }
 
         $(function () {
