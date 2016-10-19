@@ -426,7 +426,13 @@ function CreateMapHalper (htmlcontroller) {
 
     function showAll() {
         clearsearchCircle();
-        ShowItems({}, "allpoints", "allfeatures");
+        ShowItems({
+                    lat: 33.4664494,
+                    lon: -112.0655065,
+                    distance: 40
+                }, 'getitemsnearme', 'getfeaturesnearme');
+
+        //ShowItems({}, "allpoints", "allfeatures");
 
     }
 
