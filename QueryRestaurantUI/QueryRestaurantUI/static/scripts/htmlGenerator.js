@@ -141,7 +141,7 @@ function GetHtmlGeneratorHelper () {
         };
         chartConfig = chartBarCofgin
 
-        return '<div><canvas id="featuresChart"></canvas>'+
+        return '<div><h2 style="align-content: center">Distribution of the most common tags, between positive and negative sentences in the restaurant reviews</h2><canvas id="featuresChart"></canvas>'+
             featuresSentences(featuresInfo,id)+'</div>'
     }
 
@@ -414,7 +414,7 @@ function GetHtmlGeneratorHelper () {
             + '<a data-toggle="tab" href="#generalInfo">Information</a>'
             + '</li>'
             + '<li>'
-            + '    <a data-toggle="tab" href="#itemFeatures" onclick="htmlcontroller.initFeatureChartBar()">Features</a>'
+            + '    <a data-toggle="tab" href="#itemFeatures" onclick="htmlcontroller.initFeatureChartBar()">Commonly Mentioned Tags</a>'
             + '</li>'
             + '</ul>';
         $('#dialogNav').html(dialogNav);
@@ -750,6 +750,40 @@ function GetHtmlGeneratorHelper () {
 
     }
 
+    function showSearchSummary(items,restauransFeaturesStatistic )
+    {
+        var data = $('#featureSearchList').select2('data');
+        var tags = ''
+        if(data.length > 0) {
+            for (count = 0; count < data.length; count++) {
+                tags += data[count].text;
+                if (count + 1 < data.length) {
+                    tags += ', '
+                }
+            }
+            $('#tagsList').html(tags);
+            $('#searchSummary').modal('show');
+            $('#searchSummary').css('z-index', '1100');
+            var numberOfRestauransWithAllFeatures = restauransFeaturesStatistic.HaveAllFeatures.length;
+            var numberOfRestauransWithPartofFeatures = restauransFeaturesStatistic.HavePartOFFeatures.length;
+            var body = "<div class='tab-content' style='height:290px; margin-bottom:5px'>"
+                +"<div style='margin-top: 5px;'>"+"<img src='http://maps.google.com/mapfiles/ms/micons/green-dot.png'/><span> " +numberOfRestauransWithAllFeatures+ " - Number of restaurants with all searched tags</span>"
+                +"</div>"
+                +"<div style='margin-top: 5px;'>"
+                +"    <img src='http://maps.google.com/mapfiles/ms/micons/yellow-dot.png'/><span>" +numberOfRestauransWithPartofFeatures+ " - Number of restaurants with part searched tags</span>"
+                +"</div>"
+                +"<div style='margin-top: 5px;'>"
+                +"    <span>In order to mark restaurants that contains part of serached tags in </span><img src='http://maps.google.com/mapfiles/ms/micons/yellow-dot.png'/>"
+                +"    <span>Select Mode \"Any\" </span><img src='http://dilixo.net/UniqueHiddenCharacteristics/static/mode_any.png'/>"
+                +"</div>"
+                +"</div>";
+
+            $('#searchSummaryBody').html(body);
+
+        }
+    }
+
+
     function cleanFilter() {
         $('#filterAvailableFeaturesText').val('');
     }
@@ -772,7 +806,8 @@ function GetHtmlGeneratorHelper () {
         initFeatureChartBar:initFeatureChartBar,
         setMarkFeatures:setMarkFeatures,
         cleanFilter:cleanFilter,
-        cleanSearchTextBox:cleanSearchTextBox
+        cleanSearchTextBox:cleanSearchTextBox,
+        showSearchSummary:showSearchSummary
     };
 
 }

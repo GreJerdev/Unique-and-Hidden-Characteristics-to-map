@@ -135,7 +135,7 @@ class QueryServer:
         result['items'] = [item  for item in  self.GetAllItems() if str(item['id']) in  itemIds]
         result['features'] = features
         return result
-
+            
     def GetSimilarItems(self, item):
         percentOfSimilarity = 15
         results = self.__featureDBProvider.GetItemsFeaturesByItemsIds('')
@@ -269,4 +269,5 @@ if __name__ == '__main__':
     p.lat = 33.5760986
     p.lon = -112.0659298
     p.dis = 2
-    server.GetItemFeaturesAndFeatureSentencesByItemId("130") 
+    #server.GetItemFeaturesAndFeatureSentencesByItemId("130") 
+    server.GetFeaturesSentences([843])

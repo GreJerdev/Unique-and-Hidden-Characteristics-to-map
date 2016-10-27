@@ -41,6 +41,7 @@ function CreateFeatureHelper(mapHalper,htmlGenerator){
                 var selectedFeaturesArr = Array.from(results.features, function(f){return f[1]});
                 var restaurants =  Array.from(results.items, function(f){return f.id});
                 _mapHalper.updateFeaturePanel('getfeaturesbyitemsid',{'items':restaurants.toString()},selectedFeaturesArr)
+                _htmlGenerator.showSearchSummary(results.items,results.restauransFeaturesStatistic );
             }
         });
     }

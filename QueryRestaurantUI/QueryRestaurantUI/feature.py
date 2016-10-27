@@ -76,7 +76,6 @@ def SearchItemsByFeatures():
        info = ast.literal_eval(dataItemAndFeatures)
        areaSearch = True
        try:
-
            slat = request.args.get('lat')
            slng = request.args.get('lng')
            sradius = request.args.get('radius')
@@ -98,6 +97,15 @@ def SearchItemsByFeatures():
            info['items'] = arr
        except:
            areaSearch = False
+       itemsIds = [str(item['id']) for item in info['items']]
+
+       itemsList =  ','.join(itemsIds)
+       print itemsList
+       args = '?items={0}&features={1}'.format(itemsList, featuresList)
+       url = getEngineUrl() + "/querygetitemswithfeatures" + args
+       itemsInStrArr = urllib2.urlopen(url).read()
+       info['restauransFeaturesStatistic'] = ast.literal_eval(itemsInStrArr)
+       print info
     except:
        e = sys.exc_info()[0]
        print e
